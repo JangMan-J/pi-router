@@ -85,7 +85,7 @@
 			"auth": { "scheme": "Bearer", "auth_json_provider": "typesafe", "env": "TYPESAFE_API_KEY" }
 		}
 	},
-	"arms": { "local": 0.5, "jev": 0.5 },
+	"arms": { "local": 0.0, "jev": 1.0 },
 	"breaker_ms": 300000,
 	"prior": {
 		"path": "~/.local/share/route-prior/prior.json",
