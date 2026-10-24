@@ -4,7 +4,8 @@
  *
  * - user:          card -> history questions (if there is a model to keep) -> goal questions (first
  *                  turn or new goal) -> policy. Deciders that fail fall through; route() never throws
- *                  because of them.
+ *                  because of them. The first routed turn of a session that already has a working
+ *                  model (router/auto selected mid-session) keeps it without asking.
  * - continuation:  the model of the latest response (request.previous).
  * - retry:         the failed model, or a same-tier alternative when its provider is overloaded.
  * - direct:        request.previous, else the first available basic-tier model.
@@ -138,8 +139,9 @@ export function createRouter(deps: RouterDeps) {
 			history: null,
 			goal: null,
 			thresholds: config.thresholds[arm.arm],
+			adopt: !prev && !!current,
 		};
-		if (current && hasHistory) {
+		if (current && hasHistory && !input.adopt) {
 			const r = await deciders.ask(order, contracts.history, card, true, request.signal);
 			calls.push(...r.calls);
 			input.history = r.answers;

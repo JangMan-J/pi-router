@@ -99,6 +99,8 @@ const cases: Case[] = [
 	{ name: "lane without credentials -> tier", input: { goal: goal("writing_creative", 1) }, env: env({ unavailable: ["meta/muse-wonder-full-1.0"] }), model: "anthropic/claude-sonnet-5-5:medium", action: "pick", lane: null },
 
 	// 2. Later turns: keep by default.
+	{ name: "adopt: keep without asking, even on fault signals", input: { adopt: true, current: cur("anthropic/claude-opus-5-5", "high"), signals: signals({ repeated_error_fingerprint_count: 5 }) }, model: "anthropic/claude-opus-5-5:high", action: "keep", reasons: ["adopt"] },
+	{ name: "adopt under low still caps the tier", input: { adopt: true, level: "low", current: cur("anthropic/claude-opus-5-5", "high") }, model: "anthropic/claude-sonnet-5-5:medium", action: "move" },
 	{ name: "keep by default", input: { current: cur("openai-codex/gpt-6-astra", "medium"), history: hist() }, model: "openai-codex/gpt-6-astra:medium", action: "keep", reasons: ["keep"] },
 	{ name: "keep when deciders failed", input: { current: cur("anthropic/claude-haiku-5-5", "low"), history: null }, model: "anthropic/claude-haiku-5-5:low", action: "keep" },
 	{ name: "keep a model outside the tiers", input: { current: cur("xai/grok-4.7"), history: hist() }, model: "xai/grok-4.7:medium", action: "keep" },

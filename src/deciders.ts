@@ -214,8 +214,9 @@ export class Deciders {
 			if (problems.length) return { record: { backend: id, contract: contract.name, ms: ms(), ok: false, status: 200, problems } };
 			return { record: { backend: id, contract: contract.name, ms: ms(), ok: true, status: 200 }, answers: (data as { answers: Answers }).answers };
 		} catch (e) {
-			const err = e as Error;
-			const error = timeout.aborted ? `timeout ${backend.timeout_ms} ms` : signal?.aborted ? "aborted" : `${err.name}: ${err.message}`;
+			const err = e as Error & { cause?: { code?: string; message?: string } };
+			const cause = err.cause ? ` (${err.cause.code ?? err.cause.message})` : "";
+			const error = timeout.aborted ? `timeout ${backend.timeout_ms} ms` : signal?.aborted ? "aborted" : `${err.name}: ${err.message}${cause}`;
 			return { record: { backend: id, contract: contract.name, ms: ms(), ok: false, error: error.slice(0, 200) } };
 		}
 	}

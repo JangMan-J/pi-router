@@ -63,6 +63,8 @@ export interface TurnInput {
 	/** Goal answers; null when not asked or every backend failed. */
 	goal: Answers | null;
 	thresholds: Thresholds;
+	/** First routed turn of a session that already has a working model (router/auto selected mid-session): keep it. */
+	adopt?: boolean;
 }
 
 const rank = (t: Tier) => TIERS.indexOf(t);
@@ -216,7 +218,7 @@ export function isNewGoal(input: Pick<TurnInput, "history" | "thresholds">): boo
 
 /** Whether this turn needs the goal questions: nothing to keep yet, or the goal changed. */
 export function needsGoal(input: TurnInput): boolean {
-	return !input.current || isNewGoal(input);
+	return !input.current || (!input.adopt && isNewGoal(input));
 }
 
 /** The routing decision for a user turn. */
@@ -267,7 +269,9 @@ export function decideTurn(input: TurnInput, env: Env): Decision {
 	const newGoal = isNewGoal(input);
 	let result: Decision | null = null;
 
-	if (fault.length) {
+	if (input.adopt) {
+		result = keep(["adopt"]);
+	} else if (fault.length) {
 		const reasons = ["agent_fault", ...fault, ...(newGoal ? ["new_goal"] : [])];
 		let target = clampTier(tierAt(rank(curTier) + 1), input.level);
 		if (newGoal && goalNow) {

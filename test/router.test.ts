@@ -145,14 +145,16 @@ test("arm order: the session arm is tried first, the other is the fallback", asy
 
 test("thresholds follow the backend that answered", async () => {
 	// 0.33 rejection: over jev's 0.3, under local's 0.359.
-	const run = async (arm: number) => {
-		const { router } = setup({ rng: [arm], handler: () => ({ new_goal: 0.1, user_rejection: 0.33 }) });
+	const run = async (arm: string) => {
+		const { router, calls } = setup({ handler: () => ({ new_goal: 0.1, user_rejection: 0.33 }) });
 		const b = [user("x"), assistant("anthropic/claude-sonnet-5-5"), user("hmm")];
-		const r = await router.route(req({ messages: msgs(b), previous: { model: model("anthropic/claude-sonnet-5-5"), thinkingLevel: "medium" } }), ctx(b));
-		return (r.state as RouterState).last.action;
+		const state = { v: 1, arm, arm_p: 0.5, model: "anthropic/claude-sonnet-5-5", thinking: "medium", tier: "general", lane: null, goal: null, last: { action: "pick", reasons: [] } };
+		const r = await router.route(req({ messages: msgs(b), state, previous: { model: model("anthropic/claude-sonnet-5-5"), thinkingLevel: "medium" } }), ctx(b));
+		assert.equal(calls[0].backend, arm);
+		return r.model.id;
 	};
-	assert.equal(await run(0.2), "keep"); // local
-	assert.equal(await run(0.7), "escalate"); // jev
+	assert.equal(await run("local"), "claude-sonnet-5-5"); // keep
+	assert.equal(await run("jev"), "claude-opus-5-5"); // escalate
 });
 
 test("all deciders down: first turn takes the fallback tier, later turns keep or escalate on repeated errors", async () => {
@@ -163,24 +165,39 @@ test("all deciders down: first turn takes the fallback tier, later turns keep or
 	assert.deepEqual((r1.state as RouterState).last.reasons, ["first_turn", "no_decider", "tier:general"]);
 	const prev = { model: model("openai-codex/gpt-6-luna"), thinkingLevel: "low" };
 	const b2 = [...b1, assistant("openai-codex/gpt-6-luna"), user("again")];
-	const r2 = await router.route(req({ messages: msgs(b2), previous: prev }), ctx(b2));
+	const st = { ...(r1.state as RouterState), model: "openai-codex/gpt-6-luna", thinking: "low", tier: "basic" as const };
+	const r2 = await router.route(req({ messages: msgs(b2), previous: prev, state: st }), ctx(b2));
 	assert.equal(r2.model, prev.model);
+	assert.equal(r2.state, st);
 	const b3 = [...b2, ...toolError("t1"), ...toolError("t2"), ...toolError("t3"), user("still broken")];
-	const r3 = await router.route(req({ messages: msgs(b3), previous: prev }), ctx(b3));
+	const r3 = await router.route(req({ messages: msgs(b3), previous: prev, state: st }), ctx(b3));
 	assert.equal(r3.model.id, "claude-sonnet-5-5");
 	assert.deepEqual((r3.state as RouterState).last.reasons, ["agent_fault", "repeated_errors", "tier:basic->general"]);
 	assert.ok(lines.every((l) => Array.isArray(l.deciders)));
 });
 
-test("mid-session switch to router/auto keeps the working model", async () => {
-	const { router, calls } = setup({ rng: [0.7], handler: () => ({ new_goal: 0.2, user_rejection: 0.1 }) });
-	const b = [user("x"), assistant("anthropic/claude-haiku-5-5"), user("go on")];
+test("mid-session switch to router/auto keeps the working model without asking; rule 2 from the next turn", async () => {
+	const { router, calls } = setup({ rng: [0.7], handler: () => ({ new_goal: 0.2, user_rejection: 0.9 }) });
+	const b = [user("x"), assistant("anthropic/claude-haiku-5-5"), user("no, wrong"), ...toolError("e1"), ...toolError("e2"), ...toolError("e3"), user("still")];
 	const prev = { model: model("anthropic/claude-haiku-5-5"), thinkingLevel: "low" };
 	const r = await router.route(req({ messages: msgs(b), previous: prev }), ctx(b));
 	assert.equal(r.model, prev.model);
 	assert.equal(r.thinkingLevel, "low");
+	assert.deepEqual(calls, []);
+	const s = r.state as RouterState;
+	assert.deepEqual([s.arm, s.tier, s.last.action, s.last.reasons], ["jev", "basic", "keep", ["adopt"]]);
+	const b2 = [...b, assistant("anthropic/claude-haiku-5-5"), user("wrong again")];
+	const r2 = await router.route(req({ messages: msgs(b2), previous: prev, state: s }), ctx(b2));
 	assert.deepEqual(calls, [{ backend: "jev", contract: "history" }]);
-	assert.equal((r.state as RouterState).tier, "basic");
+	assert.equal((r2.state as RouterState).last.action, "escalate");
+});
+
+test("adopting an excluded model still moves off it", async () => {
+	const { router } = setup({ handler: () => "fail" });
+	const b = [user("x"), assistant("anthropic/claude-fable-5-1"), user("go on")];
+	const r = await router.route(req({ messages: msgs(b), previous: { model: model("anthropic/claude-fable-5-1"), thinkingLevel: "high" } }), ctx(b));
+	assert.equal(r.model.id, "claude-sonnet-5-5");
+	assert.deepEqual((r.state as RouterState).last.reasons, ["adopt", "excluded", "tier:general->general"]);
 });
 
 test("continuation and direct stay on the previous model; direct without one takes basic", async () => {
