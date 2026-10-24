@@ -1,0 +1,86 @@
+{
+  "version": "draft-2026-10-23",
+  "notes": "Draft tier and lane policy for router/auto, from Jang's 2026-10-23 answers. Model ids are as recorded in pi sessions; check them against `pi --list-models` before use.",
+  "tiers": {
+    "basic": [
+      "openai-codex/gpt-6-luna:low",
+      "antigravity/gemini-3.8-flash:low",
+      "anthropic/claude-haiku-5-5:low"
+    ],
+    "general": [
+      "anthropic/claude-sonnet-5-5:medium",
+      "openai-codex/gpt-6-astra:medium"
+    ],
+    "deep": [
+      "anthropic/claude-opus-5-5:high",
+      "openai-codex/gpt-6.1-sol:high",
+      "openai-codex/gpt-6-astra:high"
+    ]
+  },
+  "lanes": [
+    {
+      "id": "explicit-spec-fast-code",
+      "model": "xai/grok-4.7:medium",
+      "when": {
+        "task": [
+          "code_implementation",
+          "code_refactor"
+        ],
+        "spec_clear": ">=0.7",
+        "difficulty": "<=2"
+      },
+      "why": "Jang: go-to when instructions are very explicit, no guesswork, solid code wanted fast"
+    },
+    {
+      "id": "creative-prose",
+      "model": "meta/muse-wonder-full-1.0:medium",
+      "when": {
+        "task": [
+          "writing_creative"
+        ]
+      },
+      "why": "Jang: high intelligence, high creativity"
+    },
+    {
+      "id": "clear-orchestration",
+      "model": "meta/muse-wonder-full-1.0:medium",
+      "when": {
+        "task": [
+          "planning_design"
+        ],
+        "spec_clear": ">=0.8"
+      },
+      "why": "Jang: situationally for orchestration when goals are not ambiguous"
+    }
+  ],
+  "never": [
+    {
+      "models": [
+        "meta/muse-wonder*"
+      ],
+      "when_any": {
+        "task": [
+          "code_review",
+          "code_debugging"
+        ],
+        "user_rejection": ">=0.5",
+        "false_success": ">=0.5",
+        "spec_clear": "<0.5"
+      },
+      "why": "Jang: more sycophantic than other families; keep them away from critique, debugging and ambiguous goals"
+    }
+  ],
+  "probation": [
+    {
+      "model": "antigravity/gemini-4-argon:medium",
+      "policy": "exploration only, with logged propensity; never when latency_sensitive >= 0.5",
+      "why": "Jang: brilliant sometimes, won't speak other times, huge latency. History (both hosts): p50 15.9 s per assistant message vs opus 6.3 s; highest abort rate, 3.1% vs opus 1.4%"
+    }
+  ],
+  "excluded": [
+    {
+      "model": "anthropic/claude-fable-5-1",
+      "why": "Jang: has its own usage meter, separate from every other model in his subscriptions; the router never selects it, including exploration"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "contract": "live-v1-history",
+  "notes": [
+    "Asked on every user turn that has history. Decides keep / escalate / re-pick.",
+    "Wording from route-questions-v3, except new_goal, which uses the session-level reading Jang chose on 2026-10-24."
+  ],
+  "questions": {
+    "new_goal": {
+      "type": "noul",
+      "instructions": "Does the user's latest message start a new goal for the session, or materially change the session's goal? A new step, request or detail on the way to the current goal is not a new goal.",
+      "requires_history": true
+    },
+    "user_rejection": {
+      "type": "noul",
+      "instructions": "Does the user's latest message reject or correct the agent's previous result because the agent made a mistake, misunderstood, or did poor work? A user who changes their own mind or takes back their own earlier request is not rejecting the agent.",
+      "requires_history": true
+    },
+    "false_success": {
+      "type": "noul",
+      "instructions": "Did the agent's previous reply claim success that the recent tool results or the user's message contradict?",
+      "requires_history": true
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+	"name": "router-auto",
+	"version": "1.0.0",
+	"private": true,
+	"description": "router/auto: Jang's pi virtual model that keeps the working model and switches only on agent fault or a new goal",
+	"type": "module",
+	"keywords": ["pi-package"],
+	"pi": {
+		"extensions": ["./index.ts"]
+	},
+	"peerDependencies": {
+		"@earendil-works/pi-ai": "*",
+		"@earendil-works/pi-coding-agent": "*"
+	},
+	"scripts": {
+		"test": "node --test test/*.test.ts",
+		"typecheck": "sh scripts/typecheck.sh",
+		"fixtures": "python3 scripts/make_parity_fixtures.py",
+		"thresholds": "python3 scripts/derive_thresholds.py"
+	}
+}
