@@ -30,6 +30,7 @@ export interface RouterState {
 	lane: string | null;
 	/** Answers of the latest goal questions; the task holds until the goal changes. */
 	goal: GoalSummary | null;
+	/** The decision that put `model` in place. Keeps leave it unchanged, so they store no new state. */
 	last: { action: Action; reasons: string[] };
 }
 

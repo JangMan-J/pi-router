@@ -162,7 +162,8 @@ export function createRouter(deps: RouterDeps) {
 			tier: decision.tier,
 			lane: decision.lane,
 			goal: goalSummary(input.goal) ?? prev?.goal ?? null,
-			last: { action: decision.action, reasons: decision.reasons },
+			// The decision that put the current model in place; a keep leaves it, so keeps append no state entry.
+			last: decision.action === "keep" && prev?.model === decision.ref.key ? prev.last : { action: decision.action, reasons: decision.reasons },
 		});
 		const model =
 			request.previous && decision.action === "keep" && keyOf(request.previous.model) === decision.ref.key
