@@ -20,7 +20,7 @@ export interface Prior {
 
 let cache: { path: string; mtimeMs: number; prior: Prior | null } | undefined;
 
-/** The prior if the file exists and parses; re-read only when its mtime changes. */
+/** The prior if the file exists, parses and has entries; re-read only when its mtime changes. */
 export function loadPrior(path: string): Prior | null {
 	let mtimeMs: number;
 	try {
@@ -33,7 +33,9 @@ export function loadPrior(path: string): Prior | null {
 	let prior: Prior | null = null;
 	try {
 		const p = JSON.parse(readFileSync(path, "utf8"));
-		if (p && typeof p.models === "object" && typeof p.cells === "object") prior = p;
+		// A prior without entries carries no information: keep config order and do not explore.
+		const entries = p && typeof p.models === "object" && typeof p.cells === "object" ? Object.keys(p.models).length + Object.keys(p.cells).length : 0;
+		if (entries > 0) prior = p;
 	} catch {
 		prior = null;
 	}
