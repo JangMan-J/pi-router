@@ -48,7 +48,11 @@ How each request is routed depends on why pi is making it:
    - Excluded models (claude-fable-5-1) and probation models (gemini-4-argon) are never kept or chosen.
    - A kept model is also moved if it is outside the tier bounds for the selected level.
 4. **Switch targets.** The current model is never chosen as a switch target. A model without credentials is skipped.
-5. **Prior.** If `~/.local/share/route-prior/prior.json` has entries, the router picks within a tier by the posterior mean. It uses the task cell if that cell has at least 10 outcomes, and otherwise the model's overall entry. With probability ε = 0.1 it picks a model in the tier uniformly at random instead, and logs the propensity.
+5. **Prior.** Within a tier, config order is the default. If `~/.local/share/route-prior/prior.json` has entries, the router does two things:
+   - It removes a model from the pick only when that model is credibly worse than the tier's best-supported model (the one with the most outcomes). Credibly worse means its 95% Wilson lower bound on the bad rate is above the best-supported model's 95% upper bound. The task cell is used when both models have at least 20 outcomes in it, otherwise the model-level counts. A model with fewer than 20 outcomes is never removed.
+   - With probability ε = 0.1 it picks uniformly among the remaining models, and logs the propensity.
+
+   The outcomes are associations (Jang picks models per task), so the prior does not rank models; the random picks are what give causal evidence. Each decision logs the removed models and the numbers behind each removal.
 
 ### Decision models
 
@@ -72,7 +76,7 @@ The goal and history questions go to System One endpoints (`contracts/`). The ro
 | `backends` | URL, model, `timeout_ms` and auth for each backend |
 | `arms` | A/B weights |
 | `breaker_ms` | How long a failed backend is skipped |
-| `prior` | Path, ε and minimum outcomes per cell |
+| `prior` | Path, ε, and the minimum outcomes (20) before a model can be removed or a task cell used |
 | `contracts` | Question files |
 | `log_path` | Where the decision log goes |
 | `fallback_tier`, `unknown_model_tier` | Tier for a first turn without answers, and for a model not listed in any tier |
@@ -102,6 +106,7 @@ The goal and history questions go to System One endpoints (`contracts/`). The ro
 - the card's signals
 - the previous model, the chosen model with its thinking level, tier and lane
 - action and reason codes, propensity and whether it was an exploration pick
+- the models the prior removed, each with its basis, n, bad-rate lower bound, and the best-supported model's n and upper bound
 - prior version, state hash, and config and contract hashes
 
 ## Turn it off

@@ -1,5 +1,6 @@
 /** Table-driven policy tests against the shipped config.json. */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { loadConfig, type ModelRef } from "../src/config.ts";
 import type { Answers } from "../src/deciders.ts";
@@ -205,28 +206,82 @@ test("policy: tier helpers", () => {
 	assert.equal(tierOfModel(config, "xai/grok-4.7"), "general");
 });
 
-test("policy: prior picks by posterior mean of the task cell, model level when n < min_n", () => {
-	const prior: Prior = {
-		models: { "anthropic/claude-sonnet-5-5": { alpha: 50, beta: 50, n: 98 }, "openai-codex/gpt-6-astra": { alpha: 40, beta: 60, n: 98 } },
-		cells: {
-			"openai-codex/gpt-6-astra|code_debugging": { alpha: 18, beta: 2, n: 18 },
-			"openai-codex/gpt-6-astra|qa_knowledge": { alpha: 9, beta: 1, n: 8 },
-		},
+/** Beta parameters for `bad` bad outcomes out of n (alpha = 1 + good, beta = 1 + bad). */
+const beta = (n: number, bad: number) => ({ alpha: 1 + n - bad, beta: 1 + bad, n });
+
+test("policy: the prior keeps config order and removes only credibly worse models", () => {
+	// Sonnet is first in general. Mildly worse than astra (not credible): it stays first.
+	const mild: Prior = { models: { "anthropic/claude-sonnet-5-5": beta(60, 9), "openai-codex/gpt-6-astra": beta(400, 40) }, cells: {} };
+	const keep = decideTurn(input({ goal: goal("code_debugging", 1.5) }), env({ prior: mild }));
+	assert.equal(keep.ref.key, "anthropic/claude-sonnet-5-5");
+	assert.deepEqual(keep.demoted, []);
+	assert.equal(keep.prior_ref, "openai-codex/gpt-6-astra");
+	assert.equal(keep.propensity, 0.9 + 0.1 / 2);
+	assert.ok(keep.reasons.includes("prior"));
+	// Credibly worse: 40% bad on 100 (lower bound 0.31) vs 10% on 400 (upper bound 0.13).
+	const bad: Prior = { models: { "anthropic/claude-sonnet-5-5": beta(100, 40), "openai-codex/gpt-6-astra": beta(400, 40) }, cells: {} };
+	const demoted = decideTurn(input({ goal: goal("code_debugging", 1.5) }), env({ prior: bad }));
+	assert.equal(demoted.ref.key, "openai-codex/gpt-6-astra");
+	assert.equal(demoted.propensity, 1, "only one model left: exploration has nothing to choose from");
+	assert.equal(demoted.demoted?.length, 1);
+	const d = demoted.demoted![0];
+	assert.deepEqual([d.model, d.basis, d.n, d.ref, d.ref_n], ["anthropic/claude-sonnet-5-5", "model", 100, "openai-codex/gpt-6-astra", 400]);
+	assert.ok(d.bad_lo > d.ref_bad_hi);
+	assert.ok(demoted.reasons.includes("demoted:anthropic/claude-sonnet-5-5"));
+});
+
+test("policy: n < 20 is never demoted; the task cell is used only when both cells have n >= 20", () => {
+	// One bad Luna turn (the real prior's case) does not move Luna below Flash.
+	const luna: Prior = { models: { "openai-codex/gpt-6-luna": beta(1, 1), "antigravity/gemini-3.8-flash": beta(50, 9) }, cells: {} };
+	assert.equal(decideTurn(input({ goal: goal("qa_knowledge", 0.3) }), env({ prior: luna })).ref.key, "openai-codex/gpt-6-luna");
+	const allBad19: Prior = { models: { "openai-codex/gpt-6-luna": beta(19, 19), "antigravity/gemini-3.8-flash": beta(500, 5) }, cells: {} };
+	assert.equal(decideTurn(input({ goal: goal("qa_knowledge", 0.3) }), env({ prior: allBad19 })).ref.key, "openai-codex/gpt-6-luna");
+	// Same models fine overall but credibly bad on code_debugging, with both cells at n >= 20.
+	const cells: Prior = {
+		models: { "anthropic/claude-sonnet-5-5": beta(200, 20), "openai-codex/gpt-6-astra": beta(400, 40) },
+		cells: { "anthropic/claude-sonnet-5-5|code_debugging": beta(40, 24), "openai-codex/gpt-6-astra|code_debugging": beta(80, 8) },
 	};
-	const greedy = decideTurn(input({ goal: goal("code_debugging", 1.5) }), env({ prior }));
-	assert.equal(greedy.ref.key, "openai-codex/gpt-6-astra");
-	assert.ok(greedy.reasons.includes("prior"));
-	assert.equal(greedy.propensity, 0.9 + 0.1 / 2);
-	// qa cell has n=8 < 10: model level, where sonnet (0.5) beats astra (0.4).
-	const modelLevel = decideTurn(input({ goal: goal("qa_knowledge", 1.5) }), env({ prior }));
-	assert.equal(modelLevel.ref.key, "anthropic/claude-sonnet-5-5");
-	// Exploration: first draw < epsilon, second picks index 0 (sonnet, not greedy).
-	const draws = [0.05, 0.1];
-	const explored = decideTurn(input({ goal: goal("code_debugging", 1.5) }), env({ prior, rng: () => draws.shift()! }));
-	assert.equal(explored.ref.key, "anthropic/claude-sonnet-5-5");
-	assert.equal(explored.explored, true);
-	assert.equal(explored.propensity, 0.1 / 2);
-	assert.ok(explored.reasons.includes("explore"));
+	const dbg = decideTurn(input({ goal: goal("code_debugging", 1.5) }), env({ prior: cells }));
+	assert.equal(dbg.ref.key, "openai-codex/gpt-6-astra");
+	assert.equal(dbg.demoted?.[0].basis, "cell:code_debugging");
+	assert.equal(decideTurn(input({ goal: goal("code_implementation", 1.5) }), env({ prior: cells })).ref.key, "anthropic/claude-sonnet-5-5");
+	// Candidate cell under 20: model level decides (fine), so no demotion.
+	const thin: Prior = { ...cells, cells: { ...cells.cells, "anthropic/claude-sonnet-5-5|code_debugging": beta(19, 19) } };
+	assert.equal(decideTurn(input({ goal: goal("code_debugging", 1.5) }), env({ prior: thin })).ref.key, "anthropic/claude-sonnet-5-5");
+});
+
+test("policy: exploration is uniform over the models left, with propensity", () => {
+	const prior: Prior = { models: { "openai-codex/gpt-6-luna": beta(100, 10), "antigravity/gemini-3.8-flash": beta(100, 10), "anthropic/claude-haiku-5-5": beta(100, 60) }, cells: {} };
+	const draws = [0.05, 0.6]; // explore, then index 1 of the 2 left (flash)
+	const d = decideTurn(input({ goal: goal("qa_knowledge", 0.3) }), env({ prior, rng: () => draws.shift()! }));
+	assert.equal(d.ref.key, "antigravity/gemini-3.8-flash");
+	assert.equal(d.explored, true);
+	assert.equal(d.propensity, 0.1 / 2);
+	assert.deepEqual(d.demoted?.map((x) => x.model), ["anthropic/claude-haiku-5-5"]);
+	// Lateral moves are deterministic but skip a credibly bad model: opus -> (sol bad vs opus, the tier's best-supported) -> astra.
+	const deep: Prior = { models: { "anthropic/claude-opus-5-5": beta(700, 90), "openai-codex/gpt-6.1-sol": beta(100, 50), "openai-codex/gpt-6-astra": beta(400, 40) }, cells: {} };
+	const lat = decideTurn(input({ current: cur("anthropic/claude-opus-5-5", "high"), history: hist(0.1, 0.9) }), env({ prior: deep, rng: () => 0 }));
+	assert.equal(`${lat.ref.key}:${lat.ref.thinking}`, "openai-codex/gpt-6-astra:high");
+	assert.equal(lat.action, "lateral");
+	assert.equal(lat.propensity, 1);
+	assert.equal(lat.prior_ref, "anthropic/claude-opus-5-5");
+});
+
+test("policy: the real prior of 2026-10-24 demotes nothing; config order stands", () => {
+	const real = JSON.parse(readFileSync(new URL("./data/prior-2026-10-24.json", import.meta.url), "utf8")) as Prior;
+	const tasks = Object.keys(JSON.parse(readFileSync(new URL("../contracts/live-v1-goal.json", import.meta.url), "utf8")).questions.task.criteria);
+	const first: Record<string, string> = { "0.3": "openai-codex/gpt-6-luna", "1.5": "anthropic/claude-sonnet-5-5", "3.2": "anthropic/claude-opus-5-5" };
+	for (const task of tasks) {
+		for (const [difficulty, model] of Object.entries(first)) {
+			const d = decideTurn(input({ goal: goal(task, Number(difficulty), 0.5) }), env({ prior: real }));
+			if (d.lane) continue;
+			assert.deepEqual(d.demoted, [], `${task} ${difficulty}`);
+			assert.equal(d.ref.key, model, `${task} ${difficulty}`);
+		}
+	}
+	const basic = decideTurn(input({ goal: goal("qa_knowledge", 0.3) }), env({ prior: real }));
+	assert.equal(basic.prior_ref, "antigravity/gemini-3.8-flash");
+	assert.equal(basic.propensity, 0.9 + 0.1 / 3);
 });
 
 test("retry: overload detection", () => {

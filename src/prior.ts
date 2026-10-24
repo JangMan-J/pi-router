@@ -1,6 +1,7 @@
 /**
  * Optional outcome prior (~/.local/share/route-prior/prior.json, built by another job):
  * {"version","generated_at","models":{"<provider>/<id>":{alpha,beta,n}},"cells":{"<provider>/<id>|<task>":{alpha,beta,n}}}
+ * alpha = 1 + good, beta = 1 + bad, n = good + bad (outcomes of labelled turns).
  * Without it, a tier is tried in config order.
  */
 import { readFileSync, statSync } from "node:fs";
@@ -43,16 +44,64 @@ export function loadPrior(path: string): Prior | null {
 	return prior;
 }
 
-const mean = (b: Beta) => b.alpha / (b.alpha + b.beta);
-const usable = (b: Beta | undefined): b is Beta => !!b && b.alpha > 0 && b.beta > 0;
+/**
+ * 95% Wilson interval of a rate. The prior's Beta parameters are alpha = 1 + good, beta = 1 + bad,
+ * so a model's bad count is beta - 1 out of n.
+ */
+export function wilson(k: number, n: number, z = 1.96): { lo: number; hi: number } {
+	if (n <= 0) return { lo: 0, hi: 1 };
+	const p = k / n;
+	const z2 = z * z;
+	const center = (p + z2 / (2 * n)) / (1 + z2 / n);
+	const half = (z * Math.sqrt((p * (1 - p)) / n + z2 / (4 * n * n))) / (1 + z2 / n);
+	return { lo: Math.max(0, center - half), hi: Math.min(1, center + half) };
+}
 
-/** Posterior mean for a model on a task: the task cell when it has min_n outcomes, else the model, else 0.5. */
-export function score(prior: Prior, key: string, task: string | null, minN: number): { mean: number; source: "cell" | "model" | "none" } {
-	const cell = task ? prior.cells[`${key}|${task}`] : undefined;
-	if (usable(cell) && cell.n >= minN) return { mean: mean(cell), source: "cell" };
-	const model = prior.models[key];
-	if (usable(model)) return { mean: mean(model), source: "model" };
-	return { mean: 0.5, source: "none" };
+const round4 = (x: number) => Math.round(x * 1e4) / 1e4;
+const badOf = (b: Beta | undefined) => (b ? { bad: Math.max(0, b.beta - 1), n: b.n } : { bad: 0, n: 0 });
+
+export interface Demotion {
+	model: string;
+	/** `cell:<task>` when both models have min_n outcomes on the task, else `model`. */
+	basis: string;
+	n: number;
+	bad_lo: number;
+	ref: string;
+	ref_n: number;
+	ref_bad_hi: number;
+}
+
+/**
+ * Models in `keys` that are credibly worse than the best-supported model of `tier` (most outcomes at
+ * model level; it need not be a candidate itself, e.g. the current model or one without credentials): their 95% Wilson lower bound on the bad rate is above its 95% upper bound. A model
+ * with fewer than min_n outcomes is never demoted. The outcomes are associations (Jang picks models
+ * per task), so the prior only removes options that are clearly bad; it does not rank the rest.
+ */
+export function demotions(
+	keys: readonly string[],
+	prior: Prior,
+	task: string | null,
+	minN: number,
+	tier: readonly string[] = keys,
+): { ref: string | null; demoted: Demotion[] } {
+	let ref: string | null = null;
+	for (const k of tier) if ((prior.models[k]?.n ?? 0) > (ref ? (prior.models[ref]?.n ?? 0) : 0)) ref = k;
+	if (!ref) return { ref: null, demoted: [] };
+	const demoted: Demotion[] = [];
+	for (const k of keys) {
+		if (k === ref || (prior.models[k]?.n ?? 0) < minN) continue;
+		const cell = task ? prior.cells[`${k}|${task}`] : undefined;
+		const refCell = task ? prior.cells[`${ref}|${task}`] : undefined;
+		const byCell = !!cell && !!refCell && cell.n >= minN && refCell.n >= minN;
+		const own = badOf(byCell ? cell : prior.models[k]);
+		const theirs = badOf(byCell ? refCell : prior.models[ref]);
+		const lo = wilson(own.bad, own.n).lo;
+		const hi = wilson(theirs.bad, theirs.n).hi;
+		if (lo > hi) {
+			demoted.push({ model: k, basis: byCell ? `cell:${task}` : "model", n: own.n, bad_lo: round4(lo), ref, ref_n: theirs.n, ref_bad_hi: round4(hi) });
+		}
+	}
+	return { ref, demoted };
 }
 
 export interface Choice {
@@ -60,12 +109,16 @@ export interface Choice {
 	/** Probability that this policy picks this candidate on this turn. */
 	propensity: number;
 	explored: boolean;
-	scores?: number[];
+	/** Best-supported model the others were compared with, when a prior is present. */
+	ref?: string | null;
+	demoted: Demotion[];
 }
 
 /**
- * Pick among candidates (config order). No prior: the first, propensity 1. With a prior: the best
- * posterior mean (ties go to config order), except with probability epsilon a uniform pick.
+ * Pick among candidates in config order. No prior: the first, propensity 1, no exploration. With a
+ * prior: credibly bad models are removed, the first remaining model is the default, and with
+ * probability epsilon the pick is uniform over the remaining models (the randomized picks are what
+ * give causal evidence). The propensity of the chosen model is returned.
  */
 export function choose(
 	keys: readonly string[],
@@ -74,12 +127,15 @@ export function choose(
 	epsilon: number,
 	minN: number,
 	rng: () => number,
+	tier: readonly string[] = keys,
 ): Choice {
-	if (!prior || keys.length <= 1) return { index: 0, propensity: 1, explored: false };
-	const scores = keys.map((k) => score(prior, k, task, minN).mean);
-	const greedy = scores.indexOf(Math.max(...scores));
-	const explored = rng() < epsilon;
-	const index = explored ? Math.min(keys.length - 1, Math.floor(rng() * keys.length)) : greedy;
-	const propensity = (index === greedy ? 1 - epsilon : 0) + epsilon / keys.length;
-	return { index, propensity, explored, scores: scores.map((s) => Math.round(s * 1e4) / 1e4) };
+	if (!prior) return { index: 0, propensity: 1, explored: false, demoted: [] };
+	const { ref, demoted } = demotions(keys, prior, task, minN, tier);
+	const out = new Set(demoted.map((d) => d.model));
+	const pool = keys.map((_, i) => i).filter((i) => !out.has(keys[i]));
+	const greedy = pool[0];
+	const explored = epsilon > 0 && pool.length > 1 && rng() < epsilon;
+	const index = explored ? pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))] : greedy;
+	const propensity = (index === greedy ? 1 - epsilon : 0) + epsilon / pool.length;
+	return { index, propensity, explored, ref, demoted };
 }

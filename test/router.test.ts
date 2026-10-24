@@ -256,3 +256,25 @@ test("a switch notifies; a keep does not", async () => {
 	await router.route(req({ messages: msgs(b2), state: r.state, previous: { model: r.model, thinkingLevel: "medium" } }), c2);
 	assert.equal(c2.notes.length, 0);
 });
+
+test("the log records which models the prior removed and why", async () => {
+	const b = (n: number, bad: number) => ({ alpha: 1 + n - bad, beta: 1 + bad, n });
+	const lines: LogLine[] = [];
+	const deciders = new Deciders(config.backends, {
+		breakerMs: 1000,
+		keyFor: () => "k",
+		fetch: (async (_u: string, init: RequestInit) =>
+			new Response(JSON.stringify({ answers: answers({ task: "code_debugging", difficulty: 1.5, spec_clear: 0.5 }, JSON.parse(String(init.body)).questions) }))) as typeof fetch,
+	});
+	const prior = { models: { "anthropic/claude-sonnet-5-5": b(100, 40), "openai-codex/gpt-6-astra": b(400, 40) }, cells: {} };
+	const router = createRouter({ config, deciders, rng: () => 0.99, log: (l) => lines.push(l), prior: () => prior });
+	const br = [user("debug this")];
+	const r = await router.route(req({ messages: msgs(br) }), ctx(br));
+	assert.equal(r.model.id, "gpt-6-astra");
+	const l = lines[0] as any;
+	assert.equal(l.prior_ref, "openai-codex/gpt-6-astra");
+	assert.equal(l.demoted.length, 1);
+	assert.deepEqual(Object.keys(l.demoted[0]), ["model", "basis", "n", "bad_lo", "ref", "ref_n", "ref_bad_hi"]);
+	assert.equal(l.demoted[0].model, "anthropic/claude-sonnet-5-5");
+	assert.equal(l.propensity, 1);
+});

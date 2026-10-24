@@ -1,0 +1,1182 @@
+{
+ "version": 1,
+ "generated_at": "2026-10-24T04:21:42Z",
+ "source": {
+  "turns": 5491,
+  "sessions": 1195,
+  "by_host": {
+   "spider": 3429,
+   "jail": 2062
+  },
+  "span": [
+   "2026-10-10T15:31:27.809000Z",
+   "2026-10-24T04:21:10.982000Z"
+  ],
+  "excluded": {
+   "excluded_model": 888,
+   "noise": 175,
+   "no_run": 58,
+   "subagent": 1346,
+   "probe": 62,
+   "excluded_provider": 18
+  },
+  "eligible": 2944,
+  "labelled": 2762,
+  "good": 2366,
+  "bad": 396,
+  "unknown_no_next_turn": 181,
+  "pending_no_decision_answer": 1,
+  "bad_reasons": {
+   "rejection": 142,
+   "aborted": 199,
+   "error_stop": 13,
+   "false_success": 69,
+   "switched": 23,
+   "repeated_failure": 13
+  },
+  "interjections_not_counted": 162,
+  "on_abandoned_branch": 93,
+  "decision_answers": {
+   "goal:mammoth-1-baseten": 5490,
+   "next_history:mammoth-1-baseten": 4274
+  },
+  "last_decide_run": {
+   "backend": "local",
+   "arm": "local-jail-8090",
+   "url": "http://agent-jail.fish-munsell.ts.net:8090/v1/systemone",
+   "model": null,
+   "status": "unreachable",
+   "error": "http None: URLError: <urlopen error [Errno 111] Connection refused>"
+  },
+  "definition": "bad = next user turn user_rejection >= 0.5 or false_success >= 0.5 (decision model on the next turn's card), or the user aborted the run (not counting an interjection: the next user message arriving within 1.0 s of the interrupt), the run ended on an error stop, was followed by a manual switch away from the model, or repeated one tool error >= 3 times; good otherwise. alpha = 1 + good, beta = 1 + bad. Sub-agent sessions, anthropic/claude-fable-5-1, provider faux and turns tagged noise or probe are excluded; turns without a next user turn are unknown and excluded."
+ },
+ "models": {
+  "abliteration-ai/abliterated-model-large": {
+   "alpha": 7,
+   "beta": 4,
+   "n": 9
+  },
+  "abliteration-ai/abliterated-model-large-v2": {
+   "alpha": 24,
+   "beta": 4,
+   "n": 26
+  },
+  "anthropic/claude-haiku-4-5": {
+   "alpha": 12,
+   "beta": 3,
+   "n": 13
+  },
+  "anthropic/claude-opus-4-8": {
+   "alpha": 4,
+   "beta": 6,
+   "n": 8
+  },
+  "anthropic/claude-opus-5-5": {
+   "alpha": 618,
+   "beta": 94,
+   "n": 710
+  },
+  "anthropic/claude-sonnet-5-5": {
+   "alpha": 53,
+   "beta": 9,
+   "n": 60
+  },
+  "antigravity/gemini-2.5-pro": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "antigravity/gemini-3.7-flash": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "antigravity/gemini-3.8-flash": {
+   "alpha": 42,
+   "beta": 10,
+   "n": 50
+  },
+  "antigravity/gemini-4-argon": {
+   "alpha": 610,
+   "beta": 108,
+   "n": 716
+  },
+  "deepseek/deepseek-flash": {
+   "alpha": 30,
+   "beta": 6,
+   "n": 34
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017": {
+   "alpha": 29,
+   "beta": 9,
+   "n": 36
+  },
+  "fireworks/accounts/fireworks/routers/qwen-max-latest": {
+   "alpha": 6,
+   "beta": 5,
+   "n": 9
+  },
+  "meta/muse-spark-1.3": {
+   "alpha": 5,
+   "beta": 3,
+   "n": 6
+  },
+  "meta/muse-wonder-1.0": {
+   "alpha": 39,
+   "beta": 6,
+   "n": 43
+  },
+  "meta/muse-wonder-1.0-contributor": {
+   "alpha": 15,
+   "beta": 1,
+   "n": 14
+  },
+  "meta/muse-wonder-full-1.0": {
+   "alpha": 100,
+   "beta": 11,
+   "n": 109
+  },
+  "meta/muse-wonder-full-1.0-contributor": {
+   "alpha": 201,
+   "beta": 59,
+   "n": 258
+  },
+  "openai-codex/gpt-5.6-sol": {
+   "alpha": 27,
+   "beta": 5,
+   "n": 30
+  },
+  "openai-codex/gpt-6-astra": {
+   "alpha": 349,
+   "beta": 39,
+   "n": 386
+  },
+  "openai-codex/gpt-6-luna": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "openai-codex/gpt-6.1-sol": {
+   "alpha": 84,
+   "beta": 13,
+   "n": 95
+  },
+  "openrouter/google/gemini-4-argon": {
+   "alpha": 23,
+   "beta": 3,
+   "n": 24
+  },
+  "openrouter/reflection/beam-1.0-501b-a23b": {
+   "alpha": 2,
+   "beta": 4,
+   "n": 4
+  },
+  "openrouter/xiaomi/mimo-v2.6-pro": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "radius/precise": {
+   "alpha": 8,
+   "beta": 2,
+   "n": 8
+  },
+  "xai/grok-4.7": {
+   "alpha": 72,
+   "beta": 10,
+   "n": 80
+  },
+  "xai/grok-4.7-build-fast": {
+   "alpha": 30,
+   "beta": 2,
+   "n": 30
+  }
+ },
+ "cells": {
+  "abliteration-ai/abliterated-model-large-v2|agent_coordination": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "abliteration-ai/abliterated-model-large-v2|conversation_feedback": {
+   "alpha": 6,
+   "beta": 3,
+   "n": 7
+  },
+  "abliteration-ai/abliterated-model-large-v2|other": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "abliteration-ai/abliterated-model-large-v2|planning_design": {
+   "alpha": 2,
+   "beta": 2,
+   "n": 2
+  },
+  "abliteration-ai/abliterated-model-large-v2|qa_knowledge": {
+   "alpha": 6,
+   "beta": 1,
+   "n": 5
+  },
+  "abliteration-ai/abliterated-model-large-v2|shell_ops": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "abliteration-ai/abliterated-model-large-v2|web_research": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "abliteration-ai/abliterated-model-large-v2|writing_technical": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "abliteration-ai/abliterated-model-large|conversation_feedback": {
+   "alpha": 4,
+   "beta": 2,
+   "n": 4
+  },
+  "abliteration-ai/abliterated-model-large|other": {
+   "alpha": 3,
+   "beta": 2,
+   "n": 3
+  },
+  "abliteration-ai/abliterated-model-large|planning_design": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "abliteration-ai/abliterated-model-large|writing_creative": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "anthropic/claude-haiku-4-5|agent_coordination": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "anthropic/claude-haiku-4-5|code_debugging": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "anthropic/claude-haiku-4-5|code_refactor": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "anthropic/claude-haiku-4-5|conversation_feedback": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "anthropic/claude-haiku-4-5|repo_exploration": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "anthropic/claude-haiku-4-5|shell_ops": {
+   "alpha": 2,
+   "beta": 2,
+   "n": 2
+  },
+  "anthropic/claude-opus-4-8|code_debugging": {
+   "alpha": 2,
+   "beta": 3,
+   "n": 3
+  },
+  "anthropic/claude-opus-4-8|conversation_feedback": {
+   "alpha": 2,
+   "beta": 3,
+   "n": 3
+  },
+  "anthropic/claude-opus-4-8|qa_knowledge": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "anthropic/claude-opus-4-8|shell_ops": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "anthropic/claude-opus-5-5|agent_coordination": {
+   "alpha": 33,
+   "beta": 5,
+   "n": 36
+  },
+  "anthropic/claude-opus-5-5|code_debugging": {
+   "alpha": 17,
+   "beta": 1,
+   "n": 16
+  },
+  "anthropic/claude-opus-5-5|code_implementation": {
+   "alpha": 28,
+   "beta": 5,
+   "n": 31
+  },
+  "anthropic/claude-opus-5-5|code_refactor": {
+   "alpha": 7,
+   "beta": 3,
+   "n": 8
+  },
+  "anthropic/claude-opus-5-5|code_review": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "anthropic/claude-opus-5-5|conversation_feedback": {
+   "alpha": 239,
+   "beta": 45,
+   "n": 282
+  },
+  "anthropic/claude-opus-5-5|other": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "anthropic/claude-opus-5-5|planning_design": {
+   "alpha": 139,
+   "beta": 20,
+   "n": 157
+  },
+  "anthropic/claude-opus-5-5|qa_knowledge": {
+   "alpha": 25,
+   "beta": 1,
+   "n": 24
+  },
+  "anthropic/claude-opus-5-5|repo_exploration": {
+   "alpha": 44,
+   "beta": 4,
+   "n": 46
+  },
+  "anthropic/claude-opus-5-5|shell_ops": {
+   "alpha": 69,
+   "beta": 14,
+   "n": 81
+  },
+  "anthropic/claude-opus-5-5|web_research": {
+   "alpha": 12,
+   "beta": 3,
+   "n": 13
+  },
+  "anthropic/claude-opus-5-5|writing_technical": {
+   "alpha": 11,
+   "beta": 2,
+   "n": 11
+  },
+  "anthropic/claude-sonnet-5-5|agent_coordination": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "anthropic/claude-sonnet-5-5|code_debugging": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "anthropic/claude-sonnet-5-5|code_implementation": {
+   "alpha": 10,
+   "beta": 3,
+   "n": 11
+  },
+  "anthropic/claude-sonnet-5-5|conversation_feedback": {
+   "alpha": 12,
+   "beta": 2,
+   "n": 12
+  },
+  "anthropic/claude-sonnet-5-5|planning_design": {
+   "alpha": 3,
+   "beta": 2,
+   "n": 3
+  },
+  "anthropic/claude-sonnet-5-5|qa_knowledge": {
+   "alpha": 8,
+   "beta": 1,
+   "n": 7
+  },
+  "anthropic/claude-sonnet-5-5|repo_exploration": {
+   "alpha": 8,
+   "beta": 3,
+   "n": 9
+  },
+  "anthropic/claude-sonnet-5-5|shell_ops": {
+   "alpha": 6,
+   "beta": 1,
+   "n": 5
+  },
+  "anthropic/claude-sonnet-5-5|web_research": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "anthropic/claude-sonnet-5-5|writing_technical": {
+   "alpha": 4,
+   "beta": 2,
+   "n": 4
+  },
+  "antigravity/gemini-2.5-pro|qa_knowledge": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "antigravity/gemini-3.7-flash|conversation_feedback": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "antigravity/gemini-3.8-flash|agent_coordination": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "antigravity/gemini-3.8-flash|code_debugging": {
+   "alpha": 5,
+   "beta": 2,
+   "n": 5
+  },
+  "antigravity/gemini-3.8-flash|code_implementation": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "antigravity/gemini-3.8-flash|code_refactor": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "antigravity/gemini-3.8-flash|conversation_feedback": {
+   "alpha": 15,
+   "beta": 3,
+   "n": 16
+  },
+  "antigravity/gemini-3.8-flash|planning_design": {
+   "alpha": 3,
+   "beta": 2,
+   "n": 3
+  },
+  "antigravity/gemini-3.8-flash|qa_knowledge": {
+   "alpha": 5,
+   "beta": 2,
+   "n": 5
+  },
+  "antigravity/gemini-3.8-flash|repo_exploration": {
+   "alpha": 7,
+   "beta": 1,
+   "n": 6
+  },
+  "antigravity/gemini-3.8-flash|shell_ops": {
+   "alpha": 5,
+   "beta": 4,
+   "n": 7
+  },
+  "antigravity/gemini-3.8-flash|web_research": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "antigravity/gemini-3.8-flash|writing_technical": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "antigravity/gemini-4-argon|agent_coordination": {
+   "alpha": 32,
+   "beta": 5,
+   "n": 35
+  },
+  "antigravity/gemini-4-argon|code_debugging": {
+   "alpha": 31,
+   "beta": 8,
+   "n": 37
+  },
+  "antigravity/gemini-4-argon|code_implementation": {
+   "alpha": 56,
+   "beta": 18,
+   "n": 72
+  },
+  "antigravity/gemini-4-argon|code_refactor": {
+   "alpha": 19,
+   "beta": 5,
+   "n": 22
+  },
+  "antigravity/gemini-4-argon|code_review": {
+   "alpha": 12,
+   "beta": 2,
+   "n": 12
+  },
+  "antigravity/gemini-4-argon|conversation_feedback": {
+   "alpha": 203,
+   "beta": 35,
+   "n": 236
+  },
+  "antigravity/gemini-4-argon|other": {
+   "alpha": 21,
+   "beta": 2,
+   "n": 21
+  },
+  "antigravity/gemini-4-argon|planning_design": {
+   "alpha": 123,
+   "beta": 18,
+   "n": 139
+  },
+  "antigravity/gemini-4-argon|qa_knowledge": {
+   "alpha": 24,
+   "beta": 6,
+   "n": 28
+  },
+  "antigravity/gemini-4-argon|repo_exploration": {
+   "alpha": 49,
+   "beta": 6,
+   "n": 53
+  },
+  "antigravity/gemini-4-argon|shell_ops": {
+   "alpha": 26,
+   "beta": 9,
+   "n": 33
+  },
+  "antigravity/gemini-4-argon|web_research": {
+   "alpha": 14,
+   "beta": 3,
+   "n": 15
+  },
+  "antigravity/gemini-4-argon|writing_technical": {
+   "alpha": 12,
+   "beta": 3,
+   "n": 13
+  },
+  "deepseek/deepseek-flash|agent_coordination": {
+   "alpha": 4,
+   "beta": 3,
+   "n": 5
+  },
+  "deepseek/deepseek-flash|code_review": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "deepseek/deepseek-flash|conversation_feedback": {
+   "alpha": 12,
+   "beta": 3,
+   "n": 13
+  },
+  "deepseek/deepseek-flash|planning_design": {
+   "alpha": 6,
+   "beta": 2,
+   "n": 6
+  },
+  "deepseek/deepseek-flash|qa_knowledge": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "deepseek/deepseek-flash|repo_exploration": {
+   "alpha": 7,
+   "beta": 1,
+   "n": 6
+  },
+  "deepseek/deepseek-flash|shell_ops": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|agent_coordination": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|code_debugging": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|code_refactor": {
+   "alpha": 3,
+   "beta": 2,
+   "n": 3
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|conversation_feedback": {
+   "alpha": 8,
+   "beta": 3,
+   "n": 9
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|planning_design": {
+   "alpha": 3,
+   "beta": 3,
+   "n": 4
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|qa_knowledge": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|repo_exploration": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|shell_ops": {
+   "alpha": 10,
+   "beta": 3,
+   "n": 11
+  },
+  "fireworks/accounts/fireworks/models/deepseek-v4p1-flash-1017|web_research": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "fireworks/accounts/fireworks/routers/qwen-max-latest|agent_coordination": {
+   "alpha": 2,
+   "beta": 3,
+   "n": 3
+  },
+  "fireworks/accounts/fireworks/routers/qwen-max-latest|code_debugging": {
+   "alpha": 2,
+   "beta": 2,
+   "n": 2
+  },
+  "fireworks/accounts/fireworks/routers/qwen-max-latest|code_review": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "fireworks/accounts/fireworks/routers/qwen-max-latest|conversation_feedback": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "fireworks/accounts/fireworks/routers/qwen-max-latest|repo_exploration": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "meta/muse-spark-1.3|code_debugging": {
+   "alpha": 2,
+   "beta": 2,
+   "n": 2
+  },
+  "meta/muse-spark-1.3|conversation_feedback": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-spark-1.3|shell_ops": {
+   "alpha": 3,
+   "beta": 2,
+   "n": 3
+  },
+  "meta/muse-wonder-1.0-contributor|agent_coordination": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0-contributor|code_implementation": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "meta/muse-wonder-1.0-contributor|code_refactor": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0-contributor|conversation_feedback": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "meta/muse-wonder-1.0-contributor|planning_design": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "meta/muse-wonder-1.0-contributor|qa_knowledge": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0-contributor|repo_exploration": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0-contributor|shell_ops": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0-contributor|writing_technical": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0|agent_coordination": {
+   "alpha": 5,
+   "beta": 2,
+   "n": 5
+  },
+  "meta/muse-wonder-1.0|code_implementation": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0|code_review": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "meta/muse-wonder-1.0|conversation_feedback": {
+   "alpha": 14,
+   "beta": 3,
+   "n": 15
+  },
+  "meta/muse-wonder-1.0|planning_design": {
+   "alpha": 6,
+   "beta": 3,
+   "n": 7
+  },
+  "meta/muse-wonder-1.0|qa_knowledge": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-1.0|repo_exploration": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "meta/muse-wonder-1.0|shell_ops": {
+   "alpha": 10,
+   "beta": 1,
+   "n": 9
+  },
+  "meta/muse-wonder-full-1.0-contributor|agent_coordination": {
+   "alpha": 8,
+   "beta": 6,
+   "n": 12
+  },
+  "meta/muse-wonder-full-1.0-contributor|code_debugging": {
+   "alpha": 12,
+   "beta": 3,
+   "n": 13
+  },
+  "meta/muse-wonder-full-1.0-contributor|code_implementation": {
+   "alpha": 13,
+   "beta": 10,
+   "n": 21
+  },
+  "meta/muse-wonder-full-1.0-contributor|code_refactor": {
+   "alpha": 7,
+   "beta": 5,
+   "n": 10
+  },
+  "meta/muse-wonder-full-1.0-contributor|code_review": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-full-1.0-contributor|conversation_feedback": {
+   "alpha": 68,
+   "beta": 20,
+   "n": 86
+  },
+  "meta/muse-wonder-full-1.0-contributor|other": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-full-1.0-contributor|planning_design": {
+   "alpha": 41,
+   "beta": 10,
+   "n": 49
+  },
+  "meta/muse-wonder-full-1.0-contributor|qa_knowledge": {
+   "alpha": 14,
+   "beta": 3,
+   "n": 15
+  },
+  "meta/muse-wonder-full-1.0-contributor|repo_exploration": {
+   "alpha": 16,
+   "beta": 2,
+   "n": 16
+  },
+  "meta/muse-wonder-full-1.0-contributor|shell_ops": {
+   "alpha": 19,
+   "beta": 4,
+   "n": 21
+  },
+  "meta/muse-wonder-full-1.0-contributor|web_research": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "meta/muse-wonder-full-1.0-contributor|writing_technical": {
+   "alpha": 10,
+   "beta": 4,
+   "n": 12
+  },
+  "meta/muse-wonder-full-1.0|agent_coordination": {
+   "alpha": 15,
+   "beta": 2,
+   "n": 15
+  },
+  "meta/muse-wonder-full-1.0|code_debugging": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-full-1.0|code_implementation": {
+   "alpha": 5,
+   "beta": 2,
+   "n": 5
+  },
+  "meta/muse-wonder-full-1.0|code_refactor": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "meta/muse-wonder-full-1.0|code_review": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "meta/muse-wonder-full-1.0|conversation_feedback": {
+   "alpha": 42,
+   "beta": 6,
+   "n": 46
+  },
+  "meta/muse-wonder-full-1.0|other": {
+   "alpha": 6,
+   "beta": 1,
+   "n": 5
+  },
+  "meta/muse-wonder-full-1.0|planning_design": {
+   "alpha": 19,
+   "beta": 1,
+   "n": 18
+  },
+  "meta/muse-wonder-full-1.0|qa_knowledge": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "meta/muse-wonder-full-1.0|repo_exploration": {
+   "alpha": 6,
+   "beta": 3,
+   "n": 7
+  },
+  "meta/muse-wonder-full-1.0|shell_ops": {
+   "alpha": 6,
+   "beta": 2,
+   "n": 6
+  },
+  "meta/muse-wonder-full-1.0|writing_technical": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "openai-codex/gpt-5.6-sol|agent_coordination": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "openai-codex/gpt-5.6-sol|code_debugging": {
+   "alpha": 5,
+   "beta": 2,
+   "n": 5
+  },
+  "openai-codex/gpt-5.6-sol|code_implementation": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "openai-codex/gpt-5.6-sol|code_review": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "openai-codex/gpt-5.6-sol|conversation_feedback": {
+   "alpha": 10,
+   "beta": 3,
+   "n": 11
+  },
+  "openai-codex/gpt-5.6-sol|qa_knowledge": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "openai-codex/gpt-5.6-sol|repo_exploration": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "openai-codex/gpt-5.6-sol|shell_ops": {
+   "alpha": 4,
+   "beta": 2,
+   "n": 4
+  },
+  "openai-codex/gpt-6-astra|agent_coordination": {
+   "alpha": 43,
+   "beta": 8,
+   "n": 49
+  },
+  "openai-codex/gpt-6-astra|code_debugging": {
+   "alpha": 9,
+   "beta": 1,
+   "n": 8
+  },
+  "openai-codex/gpt-6-astra|code_implementation": {
+   "alpha": 11,
+   "beta": 6,
+   "n": 15
+  },
+  "openai-codex/gpt-6-astra|code_refactor": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "openai-codex/gpt-6-astra|code_review": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "openai-codex/gpt-6-astra|conversation_feedback": {
+   "alpha": 125,
+   "beta": 11,
+   "n": 134
+  },
+  "openai-codex/gpt-6-astra|other": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "openai-codex/gpt-6-astra|planning_design": {
+   "alpha": 61,
+   "beta": 7,
+   "n": 66
+  },
+  "openai-codex/gpt-6-astra|qa_knowledge": {
+   "alpha": 21,
+   "beta": 4,
+   "n": 23
+  },
+  "openai-codex/gpt-6-astra|repo_exploration": {
+   "alpha": 25,
+   "beta": 3,
+   "n": 26
+  },
+  "openai-codex/gpt-6-astra|shell_ops": {
+   "alpha": 40,
+   "beta": 4,
+   "n": 42
+  },
+  "openai-codex/gpt-6-astra|web_research": {
+   "alpha": 9,
+   "beta": 1,
+   "n": 8
+  },
+  "openai-codex/gpt-6-astra|writing_technical": {
+   "alpha": 10,
+   "beta": 2,
+   "n": 10
+  },
+  "openai-codex/gpt-6-luna|repo_exploration": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "openai-codex/gpt-6.1-sol|agent_coordination": {
+   "alpha": 21,
+   "beta": 1,
+   "n": 20
+  },
+  "openai-codex/gpt-6.1-sol|code_debugging": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "openai-codex/gpt-6.1-sol|code_implementation": {
+   "alpha": 13,
+   "beta": 3,
+   "n": 14
+  },
+  "openai-codex/gpt-6.1-sol|code_refactor": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "openai-codex/gpt-6.1-sol|code_review": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "openai-codex/gpt-6.1-sol|conversation_feedback": {
+   "alpha": 21,
+   "beta": 6,
+   "n": 25
+  },
+  "openai-codex/gpt-6.1-sol|planning_design": {
+   "alpha": 7,
+   "beta": 2,
+   "n": 7
+  },
+  "openai-codex/gpt-6.1-sol|qa_knowledge": {
+   "alpha": 6,
+   "beta": 3,
+   "n": 7
+  },
+  "openai-codex/gpt-6.1-sol|repo_exploration": {
+   "alpha": 7,
+   "beta": 3,
+   "n": 8
+  },
+  "openai-codex/gpt-6.1-sol|shell_ops": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "openai-codex/gpt-6.1-sol|web_research": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "openrouter/google/gemini-4-argon|code_debugging": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "openrouter/google/gemini-4-argon|code_review": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "openrouter/google/gemini-4-argon|conversation_feedback": {
+   "alpha": 8,
+   "beta": 3,
+   "n": 9
+  },
+  "openrouter/google/gemini-4-argon|qa_knowledge": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "openrouter/google/gemini-4-argon|repo_exploration": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "openrouter/google/gemini-4-argon|shell_ops": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "openrouter/reflection/beam-1.0-501b-a23b|code_implementation": {
+   "alpha": 1,
+   "beta": 3,
+   "n": 2
+  },
+  "openrouter/reflection/beam-1.0-501b-a23b|conversation_feedback": {
+   "alpha": 2,
+   "beta": 2,
+   "n": 2
+  },
+  "openrouter/xiaomi/mimo-v2.6-pro|code_debugging": {
+   "alpha": 1,
+   "beta": 2,
+   "n": 1
+  },
+  "radius/precise|code_debugging": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "radius/precise|conversation_feedback": {
+   "alpha": 2,
+   "beta": 2,
+   "n": 2
+  },
+  "radius/precise|planning_design": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "radius/precise|shell_ops": {
+   "alpha": 5,
+   "beta": 1,
+   "n": 4
+  },
+  "xai/grok-4.7-build-fast|code_implementation": {
+   "alpha": 4,
+   "beta": 1,
+   "n": 3
+  },
+  "xai/grok-4.7-build-fast|conversation_feedback": {
+   "alpha": 8,
+   "beta": 1,
+   "n": 7
+  },
+  "xai/grok-4.7-build-fast|planning_design": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "xai/grok-4.7-build-fast|qa_knowledge": {
+   "alpha": 6,
+   "beta": 1,
+   "n": 5
+  },
+  "xai/grok-4.7-build-fast|repo_exploration": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "xai/grok-4.7-build-fast|shell_ops": {
+   "alpha": 12,
+   "beta": 2,
+   "n": 12
+  },
+  "xai/grok-4.7|agent_coordination": {
+   "alpha": 26,
+   "beta": 2,
+   "n": 26
+  },
+  "xai/grok-4.7|code_debugging": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "xai/grok-4.7|code_implementation": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "xai/grok-4.7|code_refactor": {
+   "alpha": 2,
+   "beta": 1,
+   "n": 1
+  },
+  "xai/grok-4.7|conversation_feedback": {
+   "alpha": 17,
+   "beta": 6,
+   "n": 21
+  },
+  "xai/grok-4.7|planning_design": {
+   "alpha": 25,
+   "beta": 2,
+   "n": 25
+  },
+  "xai/grok-4.7|repo_exploration": {
+   "alpha": 3,
+   "beta": 1,
+   "n": 2
+  },
+  "xai/grok-4.7|shell_ops": {
+   "alpha": 2,
+   "beta": 3,
+   "n": 3
+  }
+ }
+}

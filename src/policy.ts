@@ -5,7 +5,7 @@
  */
 import { type Config, globMatch, holds, type ModelRef, parseRef, TIERS, type Thinking, type Thresholds, type Tier } from "./config.ts";
 import type { Answers } from "./deciders.ts";
-import { choose, type Prior } from "./prior.ts";
+import { choose, type Demotion, type Prior } from "./prior.ts";
 import type { Signals } from "./state.ts";
 
 export type Level = "low" | "medium" | "high";
@@ -42,6 +42,10 @@ export interface Decision {
 	reasons: string[];
 	propensity: number;
 	explored?: boolean;
+	/** Models the prior removed from this pick as credibly worse, with the numbers. */
+	demoted?: Demotion[];
+	/** The best-supported model they were compared with. */
+	prior_ref?: string | null;
 }
 
 export interface Env {
@@ -184,16 +188,23 @@ function pickTier(env: Env, tier: Tier, flat: Flat, thresholds: Thresholds, opts
 			return ok;
 		});
 		if (!cands.length) continue;
-		const c = opts.lateralFrom
-			? { index: 0, propensity: 1, explored: false }
-			: choose(cands.map((r) => r.key), env.prior, opts.task, env.config.prior.epsilon, env.config.prior.min_n, env.rng);
+		// Lateral moves stay deterministic (epsilon 0) but still skip credibly bad models.
+		const epsilon = opts.lateralFrom ? 0 : env.config.prior.epsilon;
+		const tierKeys = [...new Set(env.config.tiers[t].map((r) => parseRef(r).key))];
+		const c = choose(cands.map((r) => r.key), env.prior, opts.task, epsilon, env.config.prior.min_n, env.rng, tierKeys);
 		const ref = cands[c.index];
 		return {
 			ref: { ...ref, thinking: ref.thinking ?? "medium" },
 			tier: t,
-			reasons: [...(t !== tier ? [`tier_empty:${tier}`] : []), ...(c.explored ? ["explore"] : []), ...(env.prior && !opts.lateralFrom ? ["prior"] : [])],
+			reasons: [
+				...(t !== tier ? [`tier_empty:${tier}`] : []),
+				...(c.explored ? ["explore"] : []),
+				...(env.prior ? ["prior"] : []),
+				...c.demoted.map((d) => `demoted:${d.model}`),
+			],
 			propensity: c.propensity,
 			...(c.explored ? { explored: true } : {}),
+			...(env.prior ? { demoted: c.demoted, prior_ref: c.ref ?? null } : {}),
 		};
 	}
 	return null;

@@ -90,7 +90,8 @@
 	"prior": {
 		"path": "~/.local/share/route-prior/prior.json",
 		"epsilon": 0.1,
-		"min_n": 10
+		"min_n": 20,
+		"why": "Config order stays the default. A model is removed from a pick only when credibly worse: its 95% Wilson lower bound on the bad rate is above the 95% upper bound of the tier's best-supported model (task cell when both have min_n there, else model level); a model with fewer than min_n outcomes is never removed. Outcomes are confounded (Jang picks models per task), so the prior does not rank; epsilon-uniform exploration among the remaining models, with logged propensity, gathers causal evidence."
 	},
 	"contracts": {
 		"history": "contracts/live-v1-history.json",

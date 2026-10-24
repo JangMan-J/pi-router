@@ -195,6 +195,8 @@ export function createRouter(deps: RouterDeps) {
 			propensity: decision.propensity,
 			explored: decision.explored ?? false,
 			prior: priorNow ? (priorNow.generated_at ?? priorNow.version ?? "present") : null,
+			prior_ref: decision.prior_ref ?? null,
+			demoted: decision.demoted ?? [],
 			state_hash: stateHash(next),
 			route_ms: Math.round((performance.now() - t0) * 10) / 10,
 			config: config.version,
