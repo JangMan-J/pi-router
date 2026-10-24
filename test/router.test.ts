@@ -7,7 +7,8 @@ import type { LogLine } from "../src/log.ts";
 import type { RouterState } from "../src/policy.ts";
 import { createRouter, type RouteCtx } from "../src/router.ts";
 
-const config = loadConfig();
+// Fixture A/B weights, independent of the shipped config.json arms (which can be changed for live use).
+const config = { ...loadConfig(), arms: { local: 0.5, jev: 0.5 } };
 const USER_TEXT = "please fix the flaky login test, secret words zebra-quartz";
 
 type Spec = Record<string, number | string | undefined>;
