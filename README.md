@@ -44,7 +44,7 @@ How each request is routed depends on why pi is making it:
    - **New goal only:** the router asks the goal questions and re-picks. It keeps the current model if the new tier is the current tier and no lane matches.
    - **Otherwise** it keeps the current model.
 3. **Checks on every kept model:**
-   - If a never-rule applies (for example muse on a debugging task), the router moves to the general tier.
+   - If a never-rule applies (muse on a review or debugging task, or on a rejection or false-success turn), the router moves to the general tier. Muse needs a clear spec only for orchestration (that lane requires `spec_clear ≥ 0.8`), not for creative prose.
    - Excluded models (claude-fable-5-1) and probation models (gemini-4-argon) are never kept or chosen.
    - A kept model is also moved if it is outside the tier bounds for the selected level.
 4. **Switch targets.** The current model is never chosen as a switch target. A model without credentials is skipped.
@@ -81,14 +81,13 @@ The goal and history questions go to System One endpoints (`contracts/`). The ro
 
 ### Thresholds
 
-Each threshold is quantile-matched to Opus's labels on the 60 pilot turns: the backend fires on as many of the 53 turns with history as Opus said yes to. Rerun with `npm run thresholds`.
+`new_goal` and `user_rejection` are quantile-matched to Opus's labels on the 60 pilot turns: the backend fires on as many of the 53 turns with history as Opus said yes to. `false_success` has no gold labels, so both backends are set to fire on the same base rate, 4% of the 1,125 states-v1 history turns. Rerun with `npm run thresholds`.
 
 | Backend | Results used | `new_goal` | `user_rejection` | `false_success` |
 |---|---|---|---|---|
-| jev | `bench/results/v3/jev-latest-typesafe.jsonl` | 0.655 (fires on 9; Opus 10; AUC 0.89) | 0.30 (14 / 14; AUC 0.86) | 0.5 |
-| local | `bench/results/v2/startlux-4b-q8-jail.jsonl` | 0.657 (10 / 10; AUC 0.84) | 0.359 (14 / 14; AUC 0.90) | 0.5 |
+| jev | `bench/results/v3/` (v2 for `false_success`) | 0.655 (fires on 9; Opus 10; AUC 0.89) | 0.30 (14 / 14; AUC 0.86) | 0.715 (4.0%; 0.5 fired on 12.1%) |
+| local | `bench/results/v2/startlux-4b-q8-jail.jsonl` | 0.657 (10 / 10; AUC 0.84) | 0.359 (14 / 14; AUC 0.90) | 0.47 (4.0%; 0.5 fired on 3.7%) |
 
-- `false_success` has no gold labels, so it stays at 0.5. At that value jev fires on 13.4% of history turns and StartLux on 3.8%.
 - The live `new_goal` question asks about the session's goal, which is narrower than the v2/v3 wording these numbers were measured on. Expect it to fire less often than the table shows.
 - Re-derive the `local` thresholds if the local model changes.
 

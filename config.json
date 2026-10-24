@@ -40,10 +40,9 @@
 			"when_any": {
 				"task": ["code_review", "code_debugging"],
 				"user_rejection": ">=theta",
-				"false_success": ">=theta",
-				"spec_clear": "<0.5"
+				"false_success": ">=theta"
 			},
-			"why": "Jang: more sycophantic than other families; keep them away from critique, debugging and ambiguous goals. `theta` is the backend's calibrated threshold (config.draft.json had 0.5)."
+			"why": "Jang: more sycophantic than other families; keep them away from critique, debugging, rejection and false-success turns. Unambiguous goals are required for orchestration only, by the clear-orchestration lane's own spec_clear >= 0.8; creative prose is not gated on spec_clear (Jang: muse is for 'creative prose, and for orchestration when goals are unambiguous'). `theta` is the backend's calibrated threshold (config.draft.json had 0.5)."
 		}
 	],
 	"probation": [
@@ -64,14 +63,14 @@
 		"jev": {
 			"new_goal": 0.655,
 			"user_rejection": 0.3,
-			"false_success": 0.5,
-			"provenance": "new_goal and user_rejection: quantile-matched to claude-opus-5-5:max pilot labels (bench/gold/pilot-v1.claude-opus-5-5-max.jsonl; 53 turns with history; Opus yes 10 and 14) using bench/results/v3/jev-latest-typesafe.jsonl (contract v3, jev-1.14.0). new_goal: 0.65 is a 5-way tie at the cut (>=0.65 fires 11, >0.65 fires 9); the cut that fires less wins, 0.655 -> 9 fires, AUC 0.89. user_rejection: 0.3 sits between 0.31 and 0.29 -> 14 fires, 9 agree with Opus, AUC 0.86. false_success: no gold exists; 0.5 (the noul null point) kept. On states-v1 it fires on 13.4% of history turns (261/1951, contract v2). Reproduce: python3 scripts/derive_thresholds.py"
+			"false_success": 0.715,
+			"provenance": "new_goal and user_rejection: quantile-matched to claude-opus-5-5:max pilot labels (bench/gold/pilot-v1.claude-opus-5-5-max.jsonl; 53 turns with history; Opus yes 10 and 14) using bench/results/v3/jev-latest-typesafe.jsonl (contract v3, jev-1.14.0). new_goal: 0.65 is a 5-way tie at the cut (>=0.65 fires 11, >0.65 fires 9); the cut that fires less wins, 0.655 -> 9 fires, AUC 0.89. user_rejection: 0.3 sits between 0.31 and 0.29 -> 14 fires, 9 agree with Opus, AUC 0.86. false_success: no gold exists, so both backends fire on the same base rate, 4% of the 1125 states-v1 history turns (bench/results/v2/jev-latest-typesafe.jsonl, contract v2, same wording as live): 0.715 fires on 45 (4.0%); 0.5 fired on 136 (12.1%), too often for a switch that drops the cache. Reproduce: python3 scripts/derive_thresholds.py"
 		},
 		"local": {
 			"new_goal": 0.657,
 			"user_rejection": 0.359,
-			"false_success": 0.5,
-			"provenance": "StartLux 4B Q8 on agent-jail (bench/results/v2/startlux-4b-q8-jail.jsonl, contract v2), quantile-matched to the same Opus pilot labels. new_goal: between 0.689 and 0.625 -> 10 fires, AUC 0.84. user_rejection: between 0.411 and 0.307 -> 14 fires, AUC 0.90. false_success: 0.5 kept; fires on 3.8% of history turns (44/1143). Re-derive if the local model changes. Reproduce: python3 scripts/derive_thresholds.py"
+			"false_success": 0.47,
+			"provenance": "StartLux 4B Q8 on agent-jail (bench/results/v2/startlux-4b-q8-jail.jsonl, contract v2), quantile-matched to the same Opus pilot labels. new_goal: between 0.689 and 0.625 -> 10 fires, AUC 0.84. user_rejection: between 0.411 and 0.307 -> 14 fires, AUC 0.90. false_success: same 4% base rate on the 1125 states-v1 history turns: 0.47 fires on 45 (4.0%); 0.5 fired on 42 (3.7%). Re-derive if the local model changes. Reproduce: python3 scripts/derive_thresholds.py"
 		}
 	},
 	"backends": {
