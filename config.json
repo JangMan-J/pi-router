@@ -67,16 +67,17 @@
 			"provenance": "new_goal and user_rejection: quantile-matched to claude-opus-5-5:max pilot labels (bench/gold/pilot-v1.claude-opus-5-5-max.jsonl; 53 turns with history; Opus yes 10 and 14) using bench/results/v3/jev-latest-typesafe.jsonl (contract v3, jev-1.14.0). new_goal: 0.65 is a 5-way tie at the cut (>=0.65 fires 11, >0.65 fires 9); the cut that fires less wins, 0.655 -> 9 fires, AUC 0.89. user_rejection: 0.3 sits between 0.31 and 0.29 -> 14 fires, 9 agree with Opus, AUC 0.86. false_success: no gold exists, so both backends fire on the same base rate, 4% of the 1125 states-v1 history turns (bench/results/v2/jev-latest-typesafe.jsonl, contract v2, same wording as live): 0.715 fires on 45 (4.0%); 0.5 fired on 136 (12.1%), too often for a switch that drops the cache. Reproduce: python3 scripts/derive_thresholds.py"
 		},
 		"local": {
-			"new_goal": 0.657,
-			"user_rejection": 0.359,
-			"false_success": 0.47,
-			"provenance": "StartLux 4B Q8 on agent-jail (bench/results/v2/startlux-4b-q8-jail.jsonl, contract v2), quantile-matched to the same Opus pilot labels. new_goal: between 0.689 and 0.625 -> 10 fires, AUC 0.84. user_rejection: between 0.411 and 0.307 -> 14 fires, AUC 0.90. false_success: same 4% base rate on the 1125 states-v1 history turns: 0.47 fires on 45 (4.0%); 0.5 fired on 42 (3.7%). Re-derive if the local model changes. Reproduce: python3 scripts/derive_thresholds.py"
+			"new_goal": 0.663,
+			"user_rejection": 0.41,
+			"false_success": 0.53,
+			"provenance": "vllm-d3-mini Q8_0 on agent-jail via the permanent decision endpoint (bench/results/live-v1/d3-mini-q8-spider-history.jsonl, contract live-v1-history, asked from decent-spider over Tailscale), quantile-matched to the same Opus pilot labels. new_goal: 0.663 -> 10 fires, AUC 0.80. user_rejection: 0.41 -> 14 fires, AUC 0.84. false_success: 4% base rate on the 250 live-bench history turns: 0.53 fires on 10 (4.0%); 0.5 fired on 15 (6.0%). Re-derive if the local model changes. Reproduce: python3 scripts/derive_thresholds.py"
 		}
 	},
 	"backends": {
 		"local": {
 			"url": "http://agent-jail.fish-munsell.ts.net:8090/v1/systemone",
-			"timeout_ms": 1500
+			"model": "vllm-d3-mini",
+			"timeout_ms": 3000
 		},
 		"jev": {
 			"url": "https://api.typesafe.ai/v1/systemone",
@@ -85,7 +86,7 @@
 			"auth": { "scheme": "Bearer", "auth_json_provider": "typesafe", "env": "TYPESAFE_API_KEY" }
 		}
 	},
-	"arms": { "local": 0.0, "jev": 1.0 },
+	"arms": { "local": 0.5, "jev": 0.5 },
 	"breaker_ms": 300000,
 	"prior": {
 		"path": "~/.local/share/route-prior/prior.json",

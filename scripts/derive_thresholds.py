@@ -7,8 +7,8 @@ possible, where k is the number of turns Opus labelled "yes". When ties make two
 the one that fires less wins: a switch drops the prompt cache, so the router errs toward keeping.
 
 false_success has no gold labels. Instead both backends are set to fire on the same base rate,
-FS_RATE (4%) of the history turns of states-v1 (Jang's own sessions; both backends answered all of
-them), with the same cut rule and target FS_RATE * n turns.
+FS_RATE (4%) of their states-v1 history turns (Jev: all 1125; local d3-mini: the 250 history turns of
+the live bench), with the same cut rule and target FS_RATE * n turns.
 
 Usage: derive_thresholds.py [--bench ../bench]   (prints JSON + markdown tables)
 """
@@ -16,13 +16,13 @@ import argparse, json, os
 
 ARMS = {  # router backend -> bench result file on the 60 pilot turns
     "jev": "results/v3/jev-latest-typesafe.jsonl",       # contract v3
-    "local": "results/v2/startlux-4b-q8-jail.jsonl",     # contract v2 (StartLux 4B Q8, the local model at the time)
+    "local": "results/live-v1/d3-mini-q8-spider-history.jsonl",  # contract live-v1-history (vllm-d3-mini Q8 on agent-jail, from spider over Tailscale)
 }
 QUESTIONS = ["new_goal", "user_rejection"]
 FS_RATE = 0.04
-FS_ARMS = {  # backend -> results with false_success on the states-v1 history turns (contract v2)
-    "jev": "results/v2/jev-latest-typesafe.jsonl",
-    "local": "results/v2/startlux-4b-q8-jail.jsonl",
+FS_ARMS = {  # backend -> results with false_success on states-v1 history turns
+    "jev": "results/v2/jev-latest-typesafe.jsonl",                    # contract v2, all 1125
+    "local": "results/live-v1/d3-mini-q8-spider-history.jsonl",        # contract live-v1-history, 250 live-bench turns
 }
 
 
