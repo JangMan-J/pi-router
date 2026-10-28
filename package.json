@@ -1,21 +1,67 @@
 {
-	"name": "router-auto",
-	"version": "1.0.0",
-	"private": true,
-	"description": "router/auto: Jang's pi virtual model that keeps the working model and switches only on agent fault or a new goal",
-	"type": "module",
-	"keywords": ["pi-package"],
-	"pi": {
-		"extensions": ["./index.ts"]
-	},
-	"peerDependencies": {
-		"@earendil-works/pi-ai": "*",
-		"@earendil-works/pi-coding-agent": "*"
-	},
-	"scripts": {
-		"test": "node --test test/*.test.ts",
-		"typecheck": "sh scripts/typecheck.sh",
-		"fixtures": "python3 scripts/make_parity_fixtures.py",
-		"thresholds": "python3 scripts/derive_thresholds.py"
-	}
+  "name": "@jangmanj/pi-router",
+  "version": "1.0.0",
+  "description": "Session-level 3-axis model router with local two-stage pivot detection and calibration pipeline for Pi.",
+  "license": "MIT",
+  "author": "JangMan-J",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JangMan-J/pi-router.git"
+  },
+  "homepage": "https://github.com/JangMan-J/pi-router#readme",
+  "bugs": {
+    "url": "https://github.com/JangMan-J/pi-router/issues"
+  },
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "router",
+    "model-routing"
+  ],
+  "files": [
+    "router/index.ts",
+    "router/config.json",
+    "router/tag-mappings.json",
+    "router/contracts",
+    "router/src",
+    "router/README.md",
+    "pipeline/config.json",
+    "pipeline/catalogue.json",
+    "pipeline/src",
+    "pipeline/README.md",
+    "pipeline_guide.md",
+    "README.md"
+  ],
+  "pi": {
+    "extensions": [
+      "./router/index.ts"
+    ]
+  },
+  "scripts": {
+    "test": "node --test router/test/*.test.ts pipeline/test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test",
+    "smoke:pack": "node scripts/smoke-pack.mjs",
+    "init-package": "node scripts/init-package.mjs",
+    "bootstrap:npm": "bash scripts/npm-bootstrap.sh"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": ">=1.4.0",
+    "typebox": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-ai": "1.4.0",
+    "@earendil-works/pi-coding-agent": "1.4.0",
+    "@types/node": "~22.19.0",
+    "typebox": "1.3.27",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  }
 }

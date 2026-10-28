@@ -1,0 +1,87 @@
+{
+  "version": "pipeline-v2-2026-10-28",
+  "epoch": "2026-10-27T00:00:00Z",
+  "epoch_note": "day 0. Records created before this instant are pre-history: kept as evidence, excluded from calibration unless --prehistory is passed.",
+  "notes": "One file decides every id-bearing input: db path, encoders, recipes, decider order, policy identity. Change a value here and the record ids change with it, which is the point.",
+  "db": "~/.local/share/route-pipeline/pipeline.db",
+  "router_config": "../router/config.json",
+  "catalogue": "catalogue.json",
+  "policy": {
+    "id": "session",
+    "version": "v2-2026-10-28",
+    "note": "One selection per session on the initial card using paired 3-axis decider review, then keep (pipeline/src/decide.ts)."
+  },
+  "deciders": {
+    "order": [
+      "openrouter-mammoth",
+      "openrouter-pplx-decider",
+      "openrouter-jev",
+      "openrouter-mercury"
+    ],
+    "arm": "paired",
+    "timeout_ms": 1500
+  },
+  "questions": {
+    "goal": "../router/contracts/live-v2-axes.json"
+  },
+  "encoders": [
+    {
+      "id": "hash-ngram",
+      "version": "1",
+      "kind": "dense",
+      "dim": 512,
+      "backend": "local",
+      "enabled": true
+    },
+    {
+      "id": "bm25",
+      "version": "1",
+      "kind": "sparse",
+      "max_terms": 512,
+      "backend": "local",
+      "enabled": true
+    },
+    {
+      "id": "qwen3-embedding-0.6b",
+      "version": "1",
+      "kind": "dense",
+      "dim": 1024,
+      "backend": "http",
+      "api": "openai",
+      "url": "http://127.0.0.1:8081",
+      "model": "qwen3-embedding-0.6b",
+      "timeout_ms": 20000,
+      "enabled": true,
+      "note": "Primary dense encoder on decent-spider :8081: llama-server --embedding (OpenAI-compatible /v1/embeddings), Qwen3-Embedding-0.6B Q8, 1024 dims, loopback 127.0.0.1:8081 (systemd user unit llama-embed.service)."
+    }
+  ],
+  "default_encoder": {
+    "id": "qwen3-embedding-0.6b",
+    "version": "1",
+    "note": "Semantic default. consult scores with this encoder when its rows exist, otherwise falls back to any dense encoder that has rows (hash-ngram, which needs no infrastructure)."
+  },
+  "recipes": [
+    {
+      "id": "request-text",
+      "version": "1",
+      "source": "request"
+    },
+    {
+      "id": "project-summary",
+      "version": "1",
+      "source": "project_summary"
+    },
+    {
+      "id": "contextual",
+      "version": "1",
+      "source": "request+project_summary",
+      "join": "\n\n---\n"
+    }
+  ],
+  "embed": {
+    "on_route": true,
+    "mode": "queue",
+    "max_chars": 8000
+  },
+  "initial_mode": "classifier"
+}

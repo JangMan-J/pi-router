@@ -1,0 +1,11 @@
+{
+  "name": "route-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Stable-ID routing and embedding pipeline: admit, assess, dispatch, embed, calibrate",
+  "scripts": {
+    "test": "node --test test/*.test.ts",
+    "route": "node src/cli.ts route"
+  }
+}

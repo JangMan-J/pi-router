@@ -1,0 +1,207 @@
+{
+ "version": "v2-2026-10-28",
+ "notes": "router/auto session@v2 policy (3-axis depth/width/urgency review with paired concurrent deciders and configurable 7-profile assignment matrix). Model refs are provider/id:thinking; every id was checked against `pi --list-models`.",
+ "profiles": {
+  "quick": {
+   "tier": "basic",
+   "when": {
+    "depth": ["0"],
+    "width": ["0", "1", "unknown"]
+   },
+   "models": [
+    "antigravity/gemini-3.8-flash:low",
+    "openai-codex/gpt-6-luna:low",
+    "anthropic/claude-haiku-5-5:low"
+   ],
+   "why": "Point lookups, mechanical edits, and single-step questions; fast low-thinking models."
+  },
+  "local_work": {
+   "tier": "general",
+   "when": {
+    "depth": ["1"],
+    "width": ["0", "1", "unknown"]
+   },
+   "models": [
+    "anthropic/claude-sonnet-5-5:medium",
+    "openai-codex/gpt-6-astra:medium",
+    "openai-codex/gpt-6.1-terra:medium"
+   ],
+   "why": "Standard single-surface implementation, bug fixes, and explanations."
+  },
+  "wide_work": {
+   "tier": "general",
+   "when": {
+    "depth": ["0", "1"],
+    "width": ["2", "3"]
+   },
+   "models": [
+    "openai-codex/gpt-6-astra:medium",
+    "openai-codex/gpt-6.1-sol:medium",
+    "anthropic/claude-sonnet-5-5:medium"
+   ],
+   "why": "Routine multi-file or multi-step sweeps where instruction following and throughput across files matter."
+  },
+  "diagnosis_scoping": {
+   "tier": "general",
+   "when": {
+    "depth": ["2"],
+    "width": ["0", "1", "2", "unknown"],
+    "urgency": ["0", "1", "unknown"]
+   },
+   "models": [
+    "anthropic/claude-sonnet-5-5:high",
+    "openai-codex/gpt-6-astra:high",
+    "openai-codex/gpt-6.1-sol:medium"
+   ],
+   "why": "Non-trivial debugging or design where requirements are underspecified or exploratory."
+  },
+  "diagnosis_exec": {
+   "tier": "general",
+   "when": {
+    "depth": ["2"],
+    "width": ["0", "1", "2", "unknown"],
+    "urgency": ["2", "3"]
+   },
+   "models": [
+    "openai-codex/gpt-6-astra:high",
+    "anthropic/claude-sonnet-5-5:high",
+    "openai-codex/gpt-6.1-sol:high",
+    "xai/grok-4.7:high"
+   ],
+   "why": "Well-specified non-trivial debugging or implementation ready for direct execution."
+  },
+  "deep_focus": {
+   "tier": "deep",
+   "when": {
+    "depth": ["3"],
+    "width": ["0", "1", "2", "unknown"]
+   },
+   "models": [
+    "anthropic/claude-opus-5-5:high",
+    "openai-codex/gpt-6.1-sol:high",
+    "openai-codex/gpt-6-astra:high"
+   ],
+   "why": "Hard root-cause analysis, subtle concurrency/state bugs, or complex architecture on a focused surface."
+  },
+  "deep_system": {
+   "tier": "deep",
+   "when": {
+    "depth": ["2", "3"],
+    "width": ["3"]
+   },
+   "models": [
+    "openai-codex/gpt-6.1-sol:high",
+    "openai-codex/gpt-6-astra:high",
+    "anthropic/claude-opus-5-5:high"
+   ],
+   "why": "Deep and system-wide cross-cutting changes or end-to-end multi-component execution."
+  }
+ },
+ "fallback_profile": "local_work",
+ "tiers": {
+  "basic": [
+   "openai-codex/gpt-6-luna:low",
+   "antigravity/gemini-3.8-flash:low",
+   "anthropic/claude-haiku-5-5:low"
+  ],
+  "general": [
+   "anthropic/claude-sonnet-5-5:medium",
+   "openai-codex/gpt-6-astra:medium",
+   "openai-codex/gpt-6.1-terra:medium"
+  ],
+  "deep": [
+   "anthropic/claude-opus-5-5:high",
+   "openai-codex/gpt-6.1-sol:high",
+   "openai-codex/gpt-6-astra:high"
+  ]
+ },
+ "tier_from_depth": {
+  "0": "basic",
+  "1": "general",
+  "2": "general",
+  "3": "deep",
+  "unknown": "general"
+ },
+ "unknown_model_tier": "general",
+ "fallback_tier": "general",
+ "excluded": [
+  {
+   "model": "anthropic/claude-fable-5-1",
+   "why": "Jang: has its own usage meter, separate from every other model in his subscriptions; the router never selects it"
+  }
+ ],
+ "backends": {
+  "openrouter-mammoth": {
+   "url": "https://openrouter.ai/api/v1/systemone",
+   "model": "baseten/mammoth-1:free",
+   "family": "baseten",
+   "timeout_ms": 1500,
+   "enabled": true,
+   "auth": {
+    "scheme": "Bearer",
+    "auth_json_provider": "openrouter"
+   },
+   "note": "Primary #1: Baseten Mammoth 1 27B (Decision Index 71.2, free tier on OpenRouter, ~370 ms avg). Uses pi's OpenRouter OAuth access token."
+  },
+  "openrouter-pplx-decider": {
+   "url": "https://openrouter.ai/api/v1/systemone",
+   "model": "perplexity/pplx-decider-v1.2",
+   "family": "perplexity",
+   "timeout_ms": 1500,
+   "enabled": true,
+   "auth": {
+    "scheme": "Bearer",
+    "auth_json_provider": "openrouter"
+   },
+   "note": "Primary #2: Perplexity Decider v1.2 27B via OpenRouter (#1 vs Opus 5.5 max across task agreement, difficulty MAE, and spec_clear AUC; 257 ms p50, $0.02/M input)."
+  },
+  "openrouter-jev": {
+   "url": "https://openrouter.ai/api/v1/systemone",
+   "model": "typesafe/jev-1.14",
+   "family": "typesafe",
+   "timeout_ms": 1500,
+   "enabled": true,
+   "auth": {
+    "scheme": "Bearer",
+    "auth_json_provider": "openrouter"
+   },
+   "note": "Fallback #1: TypeSafe Jev 1.14 via OpenRouter System One (Decision Index 60.24, 164 ms p50, $0.042/M input). Steps in automatically if either primary backend fails or rate-limits."
+  },
+  "openrouter-mercury": {
+   "url": "https://openrouter.ai/api/v1/systemone",
+   "model": "inception/mercury-decide",
+   "family": "inception",
+   "timeout_ms": 1500,
+   "enabled": true,
+   "auth": {
+    "scheme": "Bearer",
+    "auth_json_provider": "openrouter"
+   },
+   "note": "Fallback #2: Inception Mercury Decide via OpenRouter System One (fourth distinct family, $0.02/M input, 65k context). Steps in if two ahead of it fail."
+  }
+ },
+ "breaker_ms": 300000,
+ "contracts": {
+  "goal": "contracts/live-v2-axes.json"
+ },
+ "pivot": {
+  "enabled": true,
+  "stub_path": ".anchor/router-stub.md",
+  "embed_url": "http://127.0.0.1:8081/v1/embeddings",
+  "embed_model": "qwen3-embedding-0.6b",
+  "rerank_url": "http://127.0.0.1:8082/v1/rerank",
+  "rerank_model": "qwen3-reranker-0.6b",
+  "timeout_ms": 800,
+  "embed_keep_threshold": 0.62,
+  "embed_pivot_threshold": 0.25,
+  "rerank_threshold": 0.35,
+  "repeated_error_threshold": 2,
+  "tool_errors_threshold": 3,
+  "tests_failed_threshold": 2
+ },
+ "tag_routing": {
+  "enabled": true,
+  "mappings_path": "tag-mappings.json"
+ },
+ "log_path": "~/.local/state/router-auto/decisions.jsonl"
+}

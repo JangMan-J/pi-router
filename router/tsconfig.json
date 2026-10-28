@@ -1,0 +1,37 @@
+{
+	"compilerOptions": {
+		"target": "ES2024",
+		"module": "Node16",
+		"moduleResolution": "Node16",
+		"lib": [
+			"ES2024"
+		],
+		"strict": true,
+		"noEmit": true,
+		"erasableSyntaxOnly": true,
+		"verbatimModuleSyntax": true,
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"types": [
+			"node"
+		],
+		"typeRoots": [
+			"./.pi-src/node_modules/@types"
+		],
+		"paths": {
+			"@earendil-works/pi-coding-agent": [
+				"./.pi-src/packages/coding-agent/dist/index.d.ts"
+			],
+			"@earendil-works/pi-ai": [
+				"./.pi-src/packages/ai/dist/index.d.ts"
+			]
+		}
+	},
+	"include": [
+		"index.ts",
+		"scripts/**/*.ts",
+		"src/**/*.ts",
+		"test/**/*.ts"
+	]
+}

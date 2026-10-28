@@ -1,0 +1,395 @@
+{
+	"as_of": "2026-10-28",
+	"source": "~/Projects/auto-router-probe/data/2026-10-28",
+	"notes": "Auto-generated from auto-router-probe sweep responses, normalized to pi catalogue models and filtered by router/config.json exclusions. Used only when a project's .anchor/router-stub.md specifies an optional tag.",
+	"tags": {
+		"agent:memory_extraction": {
+			"basic": [],
+			"general": [
+				"anthropic/claude-sonnet-5-5"
+			],
+			"deep": [
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"agent:multi_step_planning": {
+			"basic": [
+				"anthropic/claude-haiku-5-5"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"kimi-coding/k3",
+				"kimi-coding/k3.1-pro"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"agent:tool_dispatch": {
+			"basic": [
+				"antigravity/gemini-3.8-flash"
+			],
+			"general": [
+				"kimi-coding/k3",
+				"anthropic/claude-sonnet-5-5",
+				"antigravity/gemini-4-argon"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"agent:web_search": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"openai-codex/gpt-6.1-terra",
+				"kimi-coding/k3",
+				"openai-codex/gpt-6.1-sol"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"antigravity/gemini-4-argon"
+			]
+		},
+		"agent:workflow_execution": {
+			"basic": [
+				"antigravity/gemini-3.8-flash"
+			],
+			"general": [
+				"kimi-coding/k3",
+				"anthropic/claude-sonnet-5-5",
+				"antigravity/gemini-4-argon"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"classification_tagging": {
+			"basic": [
+				"openai-codex/gpt-6-luna",
+				"antigravity/gemini-2.5-flash"
+			],
+			"general": [
+				"antigravity/gemini-3.8-flash"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"anthropic/claude-sonnet-4-5"
+			]
+		},
+		"code:debugging": {
+			"basic": [
+				"anthropic/claude-haiku-5-5"
+			],
+			"general": [
+				"kimi-coding/k3",
+				"anthropic/claude-sonnet-5-5"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra",
+				"xai/grok-4.7"
+			]
+		},
+		"code:devops_config": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-sol",
+				"kimi-coding/k3"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"antigravity/gemini-4-argon"
+			]
+		},
+		"code:file_read_write": {
+			"basic": [],
+			"general": [
+				"kimi-coding/k3",
+				"anthropic/claude-sonnet-5-5",
+				"kimi-coding/k3.1-pro"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra",
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"code:frontend_ui": {
+			"basic": [],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"kimi-coding/k3"
+			],
+			"deep": [
+				"xai/grok-4.7",
+				"openai-codex/gpt-6-astra",
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"code:general_impl": {
+			"basic": [],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-sol",
+				"kimi-coding/k3"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"code:repo_scan": {
+			"basic": [
+				"anthropic/claude-haiku-5-5"
+			],
+			"general": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6.1-sol"
+			],
+			"deep": [
+				"antigravity/gemini-4-argon",
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"code:review_security": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"openai-codex/gpt-6.1-sol",
+				"anthropic/claude-sonnet-5-5"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra",
+				"kimi-coding/k3.1-pro"
+			]
+		},
+		"code:shell_execution": {
+			"basic": [
+				"antigravity/gemini-3.8-flash"
+			],
+			"general": [
+				"kimi-coding/k3",
+				"anthropic/claude-sonnet-5-5",
+				"antigravity/gemini-4-argon"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"code:sql_database": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"openai-codex/gpt-6.1-sol",
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-terra"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"antigravity/gemini-4-argon",
+				"meta/muse-wonder-1.0"
+			]
+		},
+		"content_writing": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-sol",
+				"antigravity/gemini-4-argon"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"conversational_reply": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"anthropic/claude-sonnet-4-5"
+			],
+			"deep": [
+				"anthropic/claude-opus-4-6",
+				"kimi-coding/k3.1-pro",
+				"xai/grok-4.7"
+			]
+		},
+		"customer_support": {
+			"basic": [
+				"openai-codex/gpt-6-luna",
+				"antigravity/gemini-2.5-flash"
+			],
+			"general": [
+				"antigravity/gemini-3.8-flash"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"anthropic/claude-sonnet-4-5"
+			]
+		},
+		"data:extraction": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"antigravity/gemini-3.8-flash",
+				"openai-codex/gpt-6.1-sol"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"kimi-coding/k3",
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"data:transformation": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-sol"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra",
+				"kimi-coding/k3"
+			]
+		},
+		"devops": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-sol",
+				"kimi-coding/k3"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"antigravity/gemini-4-argon"
+			]
+		},
+		"finance_trading": {
+			"basic": [],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6.1-sol"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"antigravity/gemini-4-argon"
+			]
+		},
+		"math": {
+			"basic": [
+				"antigravity/gemini-3.8-flash",
+				"anthropic/claude-haiku-5-5"
+			],
+			"general": [
+				"openai-codex/gpt-6.1-sol",
+				"kimi-coding/k3",
+				"kimi-coding/k3.1-pro"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"anthropic/claude-sonnet-5-5"
+			]
+		},
+		"qa_knowledge": {
+			"basic": [
+				"openai-codex/gpt-6-luna",
+				"anthropic/claude-haiku-5-5"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"openai-codex/gpt-6.1-sol",
+				"antigravity/gemini-4-argon"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"research_report": {
+			"basic": [],
+			"general": [
+				"openai-codex/gpt-6.1-terra",
+				"anthropic/claude-sonnet-5-5",
+				"antigravity/gemini-3.8-flash"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"antigravity/gemini-4-argon"
+			]
+		},
+		"roleplay_fiction": {
+			"basic": [],
+			"general": [
+				"antigravity/gemini-3.8-flash"
+			],
+			"deep": [
+				"anthropic/claude-sonnet-4-5",
+				"anthropic/claude-opus-5-5",
+				"anthropic/claude-opus-4-6"
+			]
+		},
+		"security_audit": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-opus-5-5",
+				"xai/grok-4.7",
+				"anthropic/claude-sonnet-5-5"
+			],
+			"deep": [
+				"antigravity/gemini-4-argon",
+				"openai-codex/gpt-6-astra"
+			]
+		},
+		"summarization": {
+			"basic": [
+				"openai-codex/gpt-6-luna"
+			],
+			"general": [
+				"anthropic/claude-sonnet-5-5",
+				"antigravity/gemini-4-argon"
+			],
+			"deep": [
+				"openai-codex/gpt-6-astra",
+				"anthropic/claude-opus-5-5"
+			]
+		},
+		"translation": {
+			"basic": [
+				"openai-codex/gpt-6-luna",
+				"antigravity/gemini-3.1-flash-lite"
+			],
+			"general": [
+				"antigravity/gemini-3.8-flash",
+				"antigravity/gemini-2.5-flash"
+			],
+			"deep": [
+				"anthropic/claude-opus-5-5",
+				"antigravity/gemini-4-argon"
+			]
+		}
+	}
+}

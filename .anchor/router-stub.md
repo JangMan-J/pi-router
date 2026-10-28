@@ -1,0 +1,1 @@
+Live session model router (`router/`) and durable SQLite calibration/embedding pipeline (`pipeline/`) for `pi`. Routes initial and pivot turns via paired 3-axis deciders (`depth`, `width`, `urgency`) across 7 profiles, and gates continuation turns with a two-stage local CPU pivot cascade (`Qwen3-Embedding-0.6B` on `:8081` + `Qwen3-Reranker-0.6B` on `:8082`).

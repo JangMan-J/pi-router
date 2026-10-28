@@ -1,5 +1,8 @@
-# Parity fixtures hold personal session text; regenerate with `npm run fixtures`.
-test/fixtures/
-# Symlink to the pi checkout, made by scripts/typecheck.sh.
-.pi-src
 node_modules/
+router/node_modules/
+pipeline/node_modules/
+router/.pi-src
+router/test/fixtures/
+*.tgz
+.env
+.env.*

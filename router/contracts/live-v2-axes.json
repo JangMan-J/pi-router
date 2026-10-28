@@ -1,0 +1,42 @@
+{
+  "contract": "live-v2-axes",
+  "notes": [
+    "3-axis initial request review (depth, width, urgency). Asked once on the first user turn of a session across a paired decider call from two distinct model families.",
+    "Reconciled conservatively: max(a, b) on depth and width, min(a, b) on urgency. No task taxonomy until post-epoch outcome data accumulates."
+  ],
+  "questions": {
+    "depth": {
+      "type": "choice",
+      "instructions": "How deep is the work requested? Assess required reasoning, investigation, interpretation, and resolution of uncertainty.",
+      "criteria": {
+        "0": "Direct operation with little interpretation",
+        "1": "Familiar work with local reasoning",
+        "2": "Diagnosis, interacting constraints, or substantial tradeoffs",
+        "3": "Open-ended investigation, competing hypotheses, or novel design",
+        "unknown": "Supplied material does not support an assessment"
+      }
+    },
+    "width": {
+      "type": "choice",
+      "instructions": "How wide is the work requested? Assess expected breadth of actions, deliverables, dependencies, and coordination.",
+      "criteria": {
+        "0": "One bounded operation",
+        "1": "Small deliverable in one area",
+        "2": "Several connected changes, dependencies, or deliverables",
+        "3": "Broad work across systems, stages, or delegated assignments",
+        "unknown": "Supplied material does not support an assessment"
+      }
+    },
+    "urgency": {
+      "type": "choice",
+      "instructions": "How specific and action-ready is the request? Assess how strongly the request supports an expectation of immediate execution without guesswork.",
+      "criteria": {
+        "0": "Intended result cannot yet be identified",
+        "1": "Goal recognizable, with consequential choices unresolved",
+        "2": "Actionable with explicit, reversible assumptions",
+        "3": "Clear enough to execute without consequential guesswork",
+        "unknown": "Supplied material does not support an assessment"
+      }
+    }
+  }
+}
